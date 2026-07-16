@@ -1,0 +1,746 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.3
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
+---
+
+# More filters: the median filter and non-local filters
+
+::: {note}
+:class: dropdown
+:name: adapted-from-7
+
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+
+:::
+
+This page will cover filters which do not use filtering kernels. First, we
+will look at the median filter, which differs in important ways from the other
+local filters we saw on [previous](5_mean_filter) pages, because it cannot be
+implemented through kernels.  In fact, it is a footprint/function filter.
+
+After the median filter, we will look at another filter, the histogram
+equalisation filter, which does not use kernel methods. In fact, histogram
+equalisation does not use a footprint at all. Because it eschews footprints
+completely, the histogram equalisation filter is a *non-local* filter. More on
+this below.
+
+As normal, we begin with some imports:
+
+```{code-cell} ipython3
+# Library imports.
+import numpy as np
+import matplotlib.pyplot as plt
+import skimage as ski
+
+# Set 'gray' as the default colormap
+plt.rcParams['image.cmap'] = 'gray'
+
+# Set NumPy precision to 2 decimal places
+np.set_printoptions(precision=2)
+
+# A custom function to quickly report image attributes.
+from skitut import show_attributes
+```
+
+## Local filtering without kernels
+
+When compared to the other local filters we have seen, the median filter uses
+the same process of "walking" through the image with a small *footprint* array
+that defines the "local neighborhood" of each pixel.
+
+Median filtering is an example of footprint/function filtering.  That is, the
+footprint defines the local neighborhood, and we apply the `np.median` function
+to that local neighborhood.
+
+::: {note}
+
+**Footprints and kernels**
+
+Remember — a *footprint* is a binary (True / False, 1 / 0) array defining the
+pixel neighborhood.  A *kernel* is a footprint with weights.
+
+:::
+
+As with the other footprints and kernels we have seen, the footprint is
+centered on every pixel during the filtering operation. The central pixel
+value is replaced with a number computed from the other values in the local
+neighborhood, e.g. the other pixel values under the footprint.
+
+When we *apply a kernel*, we calculate the new pixel value by taking a weighted
+sum of the pixels in the neighborhood, defined by the weights in the kernel.
+
+Footprint / function filters, such as the median filter, work in a different
+way.  They first select the pixels within the neighborhood, using the
+footprint, and then apply a function to the selected (neighborhood) pixel
+values. The median filter, you will not be astonished to hear, takes the
+*median* value of the pixels under the footprint.
+
+![](images/footprint_general.png)
+
+There is no way of using a kernel (a weighted sum) to calculate the median, and
+this is why we and
+[others](https://dsp.stackexchange.com/questions/13211/convolution-kernels-for-image-filtering)
+will remind to be careful to distinguish footprint filters (and footprints)
+from kernel filters (and kernels).Calculating the median utilizes ranking and
+indexing, and cannot be expressed as a weighted sum, in the way that
+calculating a mean can, for instance.
+
+One way to think of this, is that when we write the formula for the mean, we
+can write it without reference to any Python indexing operations:
+
+$ \large \text{mean} = \frac{\sum X}{n} $
+
+...we can read that as "to get the mean of a set of numbers (where $X$ refers
+all of the numbers), add them up and divide by however many numbers there are
+($n$)".
+
+Conversely for the median we first have to order the numbers from lowest to
+highest ($X_{\text{sorted}}$), and then find the value that is *at the central
+index*. So where $X$ is an array containing all the numbers, if $n$ is odd:
+
+$ \large \text{median} = X_{\text{sorted}}[\frac{n - 1}{2}]$
+
+— where the square brackets are an indexing operation.
+
+Recall that, in Python, indices start at 0, and therefore, the central element is at index $\frac{n - 1}{2}$.
+
+Consider the numbers in the array below:
+
+```{code-cell} ipython3
+# Some numbers.
+nums = np.array([10, 4, 5, 8, 7])
+nums
+```
+
+We get the mean from: $ \large \text{mean} = \frac{\sum x_i...x_n}{n} $
+
+```{code-cell} ipython3
+# Take the sum, divide by n.
+np.sum(nums) / len(nums)
+```
+
+```{code-cell} ipython3
+# Compare to the same calculation from NumPy.
+np.mean(nums)
+```
+
+Whereas we get the median from: $ \large \text{median}
+= X_{\text{sorted}}[\frac{n - 1}{2}]$
+
+```{code-cell} ipython3
+# Get the median.
+sorted_nums = np.sort(nums) # Sort the values, low to high.
+print(f"Sorted `nums`: {sorted_nums}")
+median = sorted_nums[int(len(sorted_nums)/2)] # Index to get the median.
+
+# Show the median value.
+median
+```
+
+```{code-cell} ipython3
+# Compare to NumPy.
+np.median(nums)
+```
+
+::: {note}
+
+**Median and even-length arrays**
+
+You will have spotted at once that the central position $\frac{n - 1}{2}$ will
+not be an integer for even-length arrays.  In code, the central position is `c
+= (len(arr) - 1) / 2`, and, for even-length arrays (`len(arr)` is even), `c`
+will not be an integer.
+
+`np.median` solves this in the standard way, by giving the median value as the
+mean of the values in the sorted array at indices `np.floor(c)` and
+`np.ceil(c)` — in other words, the mean of the sorted values either side of position
+`c`.
+
+:::
+
+There is no kernel method that can do the median calculation, because the
+median cannot be expressed as a weighted sum.   Instead we use the footprint to
+define a pixel neighborhood, then replace the central value with the median
+from that neighborhood, using the sorting and indexing we have seen above. So,
+the median filter *is* a local filter, because it alters pixel values based on
+other pixel values in the local neighborhood (footprint). However, it is not
+a *kernel filter* because it does not use a weighted sum of the local
+neighborhood, in contrast to other kernel-based filters like the mean filter,
+Gaussian filter etc.
+
+## Edge preservation
+
+The median filter is especially useful for removing noise from images, while
+preserving the "edges" in the image. You'll recall that the edges are big
+changes in the gradient of pixel intensities, between nearby pixels (e.g.
+black-to-white, white-to-black etc). Let's look at why the median filter is
+"edge preserving", by expanding the `nums` array into a low-resolution image,
+using `np.tile()` and `np.reshape()`.
+
+```{code-cell} ipython3
+# Make `nums` into a image array.
+nums_img = np.reshape(np.tile(nums, reps=3), (3, 5))
+nums_img
+```
+
+```{code-cell} ipython3
+# Show as an image.
+plt.matshow(nums_img);
+```
+
+Now, imagine we "walk" a 3-by-3 footprint through the `nums_img` array, and
+replace the central pixel of each footprint with the median of the pixels
+under the kernel.
+
+This process is shown below, for three footprints ("local neighborhoods" under
+a 3-by-3 array). The central pixel is highlighted in red, and the index of the
+current local neighborhood is shown above the pixel values.
+
+The flattened and sorted values from each local neighborhood are also shown,
+along with the median value of the neighborhood:
+
+![](images/median_filter.png)
+
+We can also show this in "Python space", using a for loop:
+
+```{code-cell} ipython3
+# Show some local neighborhoods of `nums_img` and their medians.
+for i in range(3):
+    i_row_start, i_col_start = 0, i
+    i_row_end, i_col_end = 3, i + 3
+    print(f"\nnums_img[{i_row_start}:{i_row_end}, {i_col_start}:{i_col_end}]")
+    current_selection = nums_img[i_row_start:i_row_end, i_col_start:i_col_end]
+    print(current_selection)
+    print(f"Flattened and sorted: {np.sort(current_selection.ravel())}")
+    print(f"Median = {np.median(nums_img[i_row_start:i_row_end, i_col_start:i_col_end])}")
+```
+
+Because the median is not a function that can be applied via kernel filtering,
+we cannot apply it using `ndi.correlate()`, as we did with the other [local
+filters](5_mean_filter).
+
+We can apply the median filter in `skimage` using `ski.filters.median()`.
+Again,  we supply a `footprint` argument to determine the size and shape of
+each pixel's "local neighborhood":
+
+```{code-cell} ipython3
+# Median filter `nums_img`.
+nums_median_filtered = ski.filters.median(nums_img,
+                                          footprint=np.ones((3,3)))
+nums_median_filtered
+```
+
+Compare to the original `nums_img` array below:
+
+```{code-cell} ipython3
+nums_img
+```
+
+The effect on the "edges" of the image is easier to see graphically:
+
+```{code-cell} ipython3
+# Show the images.
+plt.subplot(1, 2, 1)
+plt.imshow(nums_img)
+plt.title('Original')
+plt.subplot(1, 2, 2)
+plt.imshow(nums_median_filtered)
+plt.title('Median Filtered');
+```
+
+Edges involving a bigger gradient have been preserved, whilst less prominent
+edges have been merged into more prominent ones nearby. We show this, for comparison,
+alongside a mean filtered version of `nums_img`, filtered using the same size
+`footprint` ((3, 3)):
+
+```{code-cell} ipython3
+# Avoid dtype warning.  In our case, `nums_img` already fits within the 
+# np.uint8 range (0 to 255).
+nums_img = nums_img.astype(np.uint8)
+nums_mean_filtered = ski.filters.rank.mean(nums_img,
+                                           footprint=np.ones((3,3)))
+# Show the images.
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 3, 1)
+plt.imshow(nums_img)
+plt.title('Original')
+plt.subplot(1, 3, 2)
+plt.imshow(nums_median_filtered)
+plt.title('Median Filtered')
+plt.subplot(1, 3, 3)
+plt.imshow(nums_mean_filtered)
+plt.title('Mean Filtered');
+```
+
+You can see that the median filter gives a better "summary" of the distribution
+of edges in the original image - the mean filter has blurred the edges more,
+which makes sense, given that it averages pixels within a kernel.
+
+In a higher resolution image, the median filter can have the effect of removing
+noise whilst preserving edges to a greater extent than some other filters. We
+will demonstrate the median filter again with the `brick` image from
+`ski.data`:
+
+```{code-cell} ipython3
+# Load in the `brick` image.
+brick = ski.data.brick()
+show_attributes(brick)
+plt.imshow(brick);
+```
+
+We will also filter `brick` using a mean filter, with the same size kernel as
+the median filter:
+
+```{code-cell} ipython3
+# Apply a median filter.
+median_filtered_brick = ski.filters.median(brick,
+                                           footprint=np.ones((9,9)))
+
+mean_filtered_brick = ski.filters.rank.mean(brick,
+                                            footprint=np.ones((9,9)))
+# Plot both image to compare
+plt.figure(figsize=(14, 4))
+plt.subplot(1, 3, 1)
+plt.title('Original Image')
+plt.imshow(brick)
+plt.subplot(1, 3, 2)
+plt.title('Median Filtered')
+plt.imshow(median_filtered_brick)
+plt.subplot(1, 3, 3)
+plt.title('Mean Filtered')
+plt.imshow(mean_filtered_brick);
+```
+
+You can see that the edges in the images (transitions between pixels of very
+different intensities - in this case between the dark bricks and the lighter
+mortar lines) are less smoothed (less blurred) by the median filter than by the
+mean filter. This can be a desirable property of the median filter, depending
+on your application.
+
++++
+
+## Non-local filters
+
+Whilst the median filter does not use a kernel, it is still a local filter,
+because it filters pixels based on the values of other pixels in the local
+neighborhood, defined by `footprint`. Other filters use neither kernel
+filtering nor a local pixel neighborhood. These filters are called *non-local
+filters*.
+
+Non-local filters filter all of pixels in an image based on characteristics of
+a specific region of the image, or based upon characteristics of the entire
+image. As a result, a non-local filter might modify a given pixel's value based
+on the values of pixels in parts of the image that are nowhere near the "local
+neighborhood" of the pixel being modified.
+
+One foundational non-local filter is a [*histogram equalisation
+filter*](https://en.wikipedia.org/wiki/Histogram_equalization). This filter
+modifies pixels based on the intensity histogram of the entire image.
+Essentially, this process flattens the image intensity histogram into a uniform
+distribution, so that there is less variance between the pixel intensities. The
+image below illustrates this principle:
+
+```{code-cell} ipython3
+:tags: [hide-input]
+
+gray_coffee = ski.color.rgb2gray(ski.data.coffee())
+eq_coffee = ski.exposure.equalize_hist(gray_coffee)
+plt.subplot(1, 2, 1)
+edges, counts, obj = plt.hist(gray_coffee.ravel(), bins=50);
+ylims = plt.ylim()
+plt.xticks([])
+plt.yticks([])
+plt.xlabel('Pixel intensity')
+plt.ylabel('Bin count')
+plt.title('Original image')
+plt.subplot(1, 2, 2)
+plt.hist(eq_coffee.ravel(), bins=50)
+plt.ylim(ylims)
+plt.xticks([])
+plt.yticks([])
+plt.xlabel('Pixel intensity')
+plt.ylabel('Bin count')
+plt.title('Equalised');
+```
+
+We will demonstrate the histogram equalisation filter with the `eagle` image
+from `ski.data`:
+
+```{code-cell} ipython3
+# Load in the `eagle` image.
+eagle = ski.data.eagle()
+show_attributes(eagle)
+plt.imshow(eagle);
+```
+
+Let's first view the intensity histogram of `eagle`, before we apply the
+filter. As we know, we can use the `.ravel()` array method to flatten this 2D
+image to 1D, and then inspect a histogram of the pixel intensities:
+
+```{code-cell} ipython3
+# Flatted to 1D.
+one_D_eagle = eagle.ravel()
+
+# Show a histogram.
+plt.hist(eagle.ravel(),
+         bins=128)
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Pixel Count');
+```
+
+In order to apply the histogram equalisation filter, we first "deconstruct"
+into separate arrays using `np.histogram()`. This returns two arrays. One array
+we will call `counts`; this contains the height of the histogram within each
+$x$-axis bin. The second array we will call `bin_intervals`; adjacent values in
+this array are the start and end points of each $x$-axis bin. We use
+`bin_intervals` to calculate the center point of each bin, by taking the
+average of the adjacent values.
+
+*Note*: we could also use `ski.exposure.histogram()`, to the same effect.
+
+```{code-cell} ipython3
+# Centers and bin intervals, from the histogram of the flattened `eagle` image.
+counts, bin_intervals = np.histogram(one_D_eagle,
+                                     bins=256)
+
+# Calculate the bin centers from the bin edges.
+bin_centers = (bin_intervals[1:] + bin_intervals[:-1]) / 2
+
+# Show the `counts` and `bin_centers`.
+print(f"\nCounts:\n {counts}")
+print(f"\nBin centers:\n {bin_centers}")
+```
+
+We chose to use 256 bins, for this histogram, for reasons that will become
+apparent further down the page (remember this!).
+
+There are several steps in equalising the histogram:
+
+1. We normalise the histogram, so that the counts sum to 1. We do this by
+   dividing each count by the total number of pixels in the image, which
+   converts each count to a proportion.
+2. Then we calculate the *cumulative density* of the normalised histogram.
+   Basically, this means we add up the proportions as we go along the $x$-axis,
+   so each bin indicates the total proportion of pixels *up to* that point
+   (ie pixels in that particular bin, or bins situated lower down the
+   $x$-axis).
+3. We "map" each pixel intensity value to its corresponding cumulative
+   proportion. After this "mapping", we have our equalised histogram.
+
+This may all sound quite abstract, but bear with us. It is easier to follow in
+code, and is a visually striking effect when we compare the resulting histogram
+to the original.
+
+For the first step, we can normalise the `counts` by dividing each individual
+count by the total number of pixels in the image. Note that we could also do
+this using the optional `density=True` argument to `np.histogram()`, but we do
+it manually to show what the operations involve:
+
+```{code-cell} ipython3
+# Centers and bin intervals, from the histogram of the flattened `eagle` image.
+# Get the total number of pixels.
+n_pixels = len(one_D_eagle)
+# Normalize by dividing each count by the total number of pixels.
+counts_normed = counts/n_pixels
+plt.plot(bin_centers, counts_normed)
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Pixel Probability');
+```
+
+```{code-cell} ipython3
+# Do the `counts` sum to 1?
+print(f"\nCounts Normalized sum:\n {counts_normed.sum()}")
+```
+
+When we equalise the histogram, we want it to be roughly uniform across the
+pixel intensities. As a tool to perform this "uniformization", we first we
+calculate the cumulative distribution (`cdf`) of the histogram. To do this we
+take cumulative sum of the normalised counts (`counts_normed`). For a given
+bin, the cumulative sum operation adds up the proportion of pixels that are in
+that bin and in all of the lower bins (e.g. the bins closer to 0 on the
+$x$-axis). Essentially it is a running total of the `counts_normed` as we move
+from left to right across the $x$-axis:
+
+```{code-cell} ipython3
+# Get the cumulative distribution of the pixel intensities.
+cdf = np.cumsum(counts_normed)
+
+# Show a plot of the cumulative distribution.
+plt.plot(bin_centers, cdf)
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Cumulative Proportion');
+```
+
+The final value in `cdf` is 1 (or at least close-as-dammit, given precision
+loss in the calculations). Remember, we are adding up proportions here, so
+a value of 1 indicates that the final bin and all of the lower bins together
+contain 100% (proportion 1.0) of the pixels in the image:
+
+```{code-cell} ipython3
+cdf[-1]
+```
+
+The next step requires some thought, to follow what is going on. We want to
+"map" the pixel values in the flattened `one_D_eagle` array to the values in
+the `cdf`. We can do this, for the current `eagle` image, by using the
+`one_D_eagle` pixel intensity values as *indexes* for the `cdf` array. This
+might seem like a hack, so lets break it down.
+
+Recall that we asked you to remember that we asked `np.histogram()` to give us
+a histogram with 256 bins? Well, as a result our `cdf` array, which contains
+the running total of the proportions in a given bin and lower bins, has 256
+elements:
+
+```{code-cell} ipython3
+# Show the `shape` of the `cdf` array.
+cdf.shape
+```
+
+Because we count from 0, when indexing arrays, the final value in `cdf` is at
+index location 255:
+
+```{code-cell} ipython3
+# Show the final value of the `cdf` array, at integer index location 255.
+cdf[255]
+```
+
+Given that `one_D_eagle` is in the `uint8` `dtype`, the maximum and minimum
+values allowed are 255 and 0.  The actual image is has maximum, minimum of 255
+and 1.
+
+```{code-cell} ipython3
+# Show the `dtype` and `min`/`max` values of `eagle`.
+show_attributes(one_D_eagle)
+```
+
+Conveniently here, each pixel intensity value in `one_D_eagle` will work as an
+index into `cdf`. This allows us to replace each pixel intensity value with its
+corresponding cumulative proportion. So, if a pixel intensity value $p$ falls
+in bin $b$, then bin $b$ has a corresponding cumulative proportion in the `cdf`
+array. We use this "mapped" values as our output image - this has the effect of
+"smoothing out", or, in fact, "equalising" the histogram, because bins without
+many pixels in them "inherit" the proportions from lower bins. Again, this is
+easier to appreciate visually, by viewing the histograms below.
+
+Let's perform the indexing/equalisation, and then inspect the histograms, so
+this effect becomes apparent. We show this mapping first with ten pixel
+intensity values from `one_D_eagle`:
+
+```{code-cell} ipython3
+first_ten_pixels = one_D_eagle[:10]
+first_ten_pixels
+```
+
+...we then show the corresponding cumulative proportions that these values will
+be mapped to, when we use them as indexes for `cdf`:
+
+```{code-cell} ipython3
+cdf[first_ten_pixels]
+```
+
+To perform this mapping for *every* pixel intensity value, we use the following
+operation:
+
+```{code-cell} ipython3
+# Equalise the histogram of `eagle`, by using the pixel intensity values in `one_D_eagle` (1 - 255)
+# as indexes into the `cdf` array.
+equalised_hist = cdf[one_D_eagle]
+```
+
+The original histogram and the equalised histogram, along with the
+corresponding images, are shown below. We first `.reshape()` the
+`equalised_hist` back into the shape of the original, non-flattened `eagle`
+image, thus restoring its status as a 2D image array:
+
+```{code-cell} ipython3
+# Reshape to 2D.
+eagleback_to_2D = equalised_hist.reshape(eagle.shape)
+
+# Generate the plot.
+plt.figure(figsize=(14, 8))
+plt.subplot(2, 2, 1)
+plt.imshow(eagle)
+plt.title('Original Image')
+plt.subplot(2, 2, 2)
+plt.title('Original Histogram')
+plt.hist(eagle.ravel(), bins=128)
+plt.subplot(2, 2, 3)
+plt.imshow(eagleback_to_2D)
+plt.title('Equalised Image')
+plt.subplot(2, 2, 4)
+plt.title('Equalised Histogram')
+plt.hist(eagleback_to_2D.ravel());
+```
+
+The equalised histogram now much more closely resembles a [uniform
+distribution](https://en.wikipedia.org/wiki/Uniform_distribution) - the notable
+"peaks and valleys" of the original and been replaced with a uniform
+distribution. In this case, the effect on the perceived visual image is one of
+heightened contrast — pay particular attention to the wall behind the noble
+eagle. Each image, without the histograms, can be viewed below, for easier
+inspection:
+
+```{code-cell} ipython3
+# Generate the plot.
+plt.figure(figsize=(14, 8))
+plt.subplot(1, 2, 1)
+plt.imshow(eagle)
+plt.title('Original Image')
+plt.subplot(1, 2, 2)
+plt.imshow(eagleback_to_2D)
+plt.title('Equalised Image');
+```
+
+Let's consider how the equalisation works.   Consider the original normalised (density) histogram and the cumulative density that we calculated above:
+
+```{code-cell} ipython3
+plat_x = [130, 200]
+fig, ax = plt.subplots(2, 1)
+ax[0].plot(bin_centers, counts_normed)
+ax[0].set_ylabel('Intensity proportion');
+ax[0].set_title('Proportional histogram')
+ax[0].set_xticks([])
+y_lims = ax[0].get_ylim()
+ax[0].add_patch(
+    plt.Rectangle([plat_x[0], y_lims[0]],
+                  plat_x[1] - plat_x[0],
+                  y_lims[1] - y_lims[0],
+                  color='gray', alpha=0.3))
+ax[1].plot(bin_centers, cdf)
+ax[1].set_xlabel('Pixel Intensity')
+ax[1].set_ylabel('Cumulative Proportion');
+ax[1].set_title('Cumulative proportion');
+y_lims = ax[1].get_ylim()
+ax[1].add_patch(
+    plt.Rectangle([plat_x[0], y_lims[0]],
+                  plat_x[1] - plat_x[0],
+                  y_lims[1] - y_lims[0],
+                  color='gray', alpha=0.3));
+```
+
+Now consider the low plateau in the proportional histogram between about pixel intensities of 130 to 200 (gray box).  This corresponds to a plateau in the cumulative proportion in the same region, because there are relatively few pixels in the image within this wide range.  In the original image there is a fairly wide difference (of 70) between pixels at either end of this plateau.  However, there is a small difference in cumulative density (less than 0.1) for pixels between 130 and 200.  If we replace the pixel values with the cumulative proportion values, this has the effect of compressing the image range devoted to difference along this plateau.  Conversely, for parts of the intensity range where the there is a rapid change in cumulative proportion, replacing image intensity with cumulative proportion will have the effect of expanding the available image range for those image intensities.  Thus the normalization has the effect of devoting greater image range to regions of rapid change in the original histogram.
+from matplotlib.patches import Rectangle
+
++++
+
+The Numpy implementation of histogram equalisation has changed the `dtype` of the image because we have
+replaced values ranging from 1 to 255 with proportions ranging from 0 to 1:
+
+```{code-cell} ipython3
+# The `dtype` and `min`/`max` values of the original image.
+show_attributes(eagle)
+```
+
+```{code-cell} ipython3
+# The `dtype` and `min`/`max` values of the filtered image.
+show_attributes(equalised_hist)
+```
+
+This is important to be aware of, but we can easily convert back to the
+original `dtype` using the relevant function from `ski.util`. Speaking of
+`ski`, lets look at how to apply this filter in `skimage` in the next
+section...
+
++++
+
+## Histogram equalisation in `skimage`
+
+As usual, `skimage` makes it easy to implement this filter, in just a single
+line of code. We just pass our `eagle` image to the
+`ski.exposure.equalize_hist()` function, and it will carry out all the
+operations we saw above:
+
+```{code-cell} ipython3
+# Equalise `eagle` using `skimage.
+eagle_equalized_with_ski = ski.exposure.equalize_hist(eagle)
+
+# Generate the plot.
+plt.figure(figsize=(14, 8))
+plt.subplot(2, 2, 1)
+plt.imshow(eagle)
+plt.title('Original Image')
+plt.subplot(2, 2, 2)
+plt.hist(eagle.ravel(), bins=128)
+plt.title('Original Histogram')
+plt.subplot(2, 2, 3)
+plt.imshow(eagle_equalized_with_ski)
+plt.title('Equalised Image (via `skimage`)')
+plt.subplot(2, 2, 4)
+plt.hist(eagle_equalized_with_ski.ravel())
+plt.title('Equalised Histogram (via `skimage`)')
+plt.tight_layout();
+```
+
+Easy-peasy. If you consult the
+[documentation](https://scikit-image.org/docs/0.25.x/api/skimage.exposure.html#skimage.exposure.equalize_hist)
+for `ski.exposure.equalize_hist()`, you notice that by default, it uses 256
+bins. In fact, for the `nbins` optional argument, the documentation states that
+it will be ignored for integer data. This is so the "indexing trick" that we
+saw above can be performed.
+
+It is no problem to use this filter with `float` image data however - the
+principle is the same pixel intensities get mapped to their corresponding
+cumulative proportion. Only now this occurs without the neat indexing trick,
+there is just an intermediate (boring!) step in the mapping. We demonstrate
+this below with the `coins` image from `ski.data`:
+
+```{code-cell} ipython3
+# Import the `coins` image.
+coins = ski.data.coins()
+
+# Convert to `float64` `dtype`.
+coins_as_float = ski.util.img_as_float64(coins)
+
+# Show the image, the histogram of the image, and the attributes of the image.
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 2, 1)
+plt.imshow(coins_as_float)
+plt.title('Original Image')
+plt.subplot(1, 2, 2)
+plt.hist(coins_as_float.ravel())
+plt.title('Original Histogram')
+plt.tight_layout();
+show_attributes(coins_as_float)
+```
+
+```{code-cell} ipython3
+# Equalise the histogram.
+coins_as_float_equalised_with_ski = ski.exposure.equalize_hist(coins_as_float)
+
+# Show the image, the histogram of the image, and the attributes of the image.
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 2, 1)
+plt.imshow(coins_as_float_equalised_with_ski)
+plt.title('Equalised Image (via `skimage`)')
+plt.subplot(1, 2, 2)
+plt.hist(coins_as_float_equalised_with_ski.ravel())
+plt.title('Equalised Histogram (via `skimage`)')
+plt.tight_layout();
+show_attributes(coins_as_float_equalised_with_ski)
+```
+
+## Summary
+
+This page has shown a local filter (the median filter) and a non-local filter
+(histogram equalisation) which do not use kernel filtering to perform their
+filtering operations. On the [next page](8_morphology) we will introduce
+another method for modifying pixels based on a `footprint`.
+
++++
+
+## References
+
+Adapted from:
+
+* [Jan Erik Solem on histogram
+  equalisation](https://www.janeriksolem.net/histogram-equalization-with-python-and.html)
+* [Jungletronics on histogram equalisation in
+  OpenCV](https://medium.com/jungletronics/histogram-equalization-34149fc299a6)

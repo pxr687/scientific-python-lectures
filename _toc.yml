@@ -44,6 +44,17 @@ parts:
       - file: packages/statistics/index
       - file: packages/sympy
       - file: packages/scikit-image/index
+        sections:
+          - file: packages/scikit-image/0_images_as_numpy_arrays
+          - file: packages/scikit-image/1_color_images_as_numpy_arrays
+          - file: packages/scikit-image/2_skimage_intro
+          - file: packages/scikit-image/3_skimage_processing_from_numpy_and_scipy
+          - file: packages/scikit-image/4_threshold_filters
+          - file: packages/scikit-image/5_mean_filter
+          - file: packages/scikit-image/6_gaussian_sharpening_edge
+          - file: packages/scikit-image/7_median_nonlocal_filters
+          - file: packages/scikit-image/8_morphology
+          - file: packages/scikit-image/9_segmentation
       - file: packages/scikit-learn/index
   - caption: About
     chapters:
