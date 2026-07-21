@@ -6,9 +6,9 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.17.3
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # Filtering with kernels II - Gaussian blur, sharpening and edge detection
@@ -270,7 +270,7 @@ shown below, in prettier form, to aid your ruminations:
 show_mat(big_gaussian_kernel)
 ```
 
-We will also plot this kernel in 3D, as with the last kernel. Again, the integer index locations of the array form the horizontal ($x$ and $y$) axis values, and the values within the array are plotted on the vertical ($z$) axis. 
+We will also plot this kernel in 3D, as with the last kernel. Again, the integer index locations of the array form the horizontal ($x$ and $y$) axis values, and the values within the array are plotted on the vertical ($z$) axis.
 
 ```{code-cell} ipython3
 # Show the new, bigger Gaussian kernel.
@@ -1841,13 +1841,7 @@ filtering effects.
 
 ## References
 
-Adapted from:
-
-* [Scientific Python Lecture Notes - image
-  processing](https://lectures.scientific-python.org/advanced/image_processing)
-* [Scientific Python Lecture Notes: scikit-image](https://lectures.scientific-python.org/packages/scikit-image/index.html)
-
-with further inspiration from:
+Created with inspiration from:
 
 * [Napari tutorial](https://jni.github.io/i2k-skimage-napari/lectures/1_image_filters.html);
 * [`skimage` tutorial](https://github.com/scikit-image/skimage-tutorials);

@@ -6,9 +6,9 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.17.3
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # What about color?
@@ -1147,9 +1147,6 @@ which uses NumPy image arrays as its fundamental representation of images.
 
 Adapted from:
 
-* [Scientific Python Lecture Notes - image
-  processing](https://lectures.scientific-python.org/advanced/image_processing)
-* [Scientific Python Lecture Notes: scikit-image](https://lectures.scientific-python.org/packages/scikit-image/index.html)
 * [Nipraxis course - arrays and
   images](https://textbook.nipraxis.org/arrays_and_images.html)
 * [Nipraxis course - three-dimensional

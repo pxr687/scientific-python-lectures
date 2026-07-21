@@ -6,9 +6,9 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.17.3
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # Threshold filtering
@@ -1013,9 +1013,6 @@ pixels.
 
 Adapted from:
 
-* [Scientific Python Lecture Notes - image
-  processing](https://lectures.scientific-python.org/advanced/image_processing)
-* [Scientific Python Lecture Notes: scikit-image](https://lectures.scientific-python.org/packages/scikit-image/index.html)
 * [Nipraxis course - Otsu threshold](https://textbook.nipraxis.org/otsu_threshold.html)
 
 with further inspiration from [Napari tutorial](https://jni.github.io/i2k-skimage-napari/lectures/1_image_filters.html) and [`skimage`](https://github.com/scikit-image/skimage-tutorials) [tutorials](https://scipy-2024-image-analysis.github.io/tutorial/01_images_are_arrays.html).
