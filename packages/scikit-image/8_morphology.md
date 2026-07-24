@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -12,6 +12,14 @@ kernelspec:
 ---
 
 # Morphology
+
+::: {note}
+:class: dropdown
+:name: adapted-from-8
+
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
+
+:::
 
 [Morphology](https://en.wikipedia.org/wiki/Mathematical_morphology) is the
 mathematical study of shapes and has numerous applications in image processing.
@@ -106,7 +114,7 @@ https://en.wikipedia.org/wiki/Erosion_(morphology)).
 As we said above, erosion is the application of a footprint / function filter,
 where the function is `minimum`.
 
-```{code-cell} ipython3
+```{code-cell}
 import skimage as ski
 import numpy as np
 import matplotlib.pyplot as plt
@@ -125,7 +133,7 @@ The morphology (shape) part of erosion, is the choice of a footprint to identify
 
 For example, consider this image — the blue channel of an image from the Hubble Space Telescope:
 
-```{code-cell} ipython3
+```{code-cell}
 # Blue channel of Hubble image, as uint8
 hubble_blue = ski.data.hubble_deep_field()[:, :, 2]
 # As uint8 integer image type.
@@ -139,20 +147,20 @@ We might want to keep the larger disk-shaped objects in this image (brighter sta
 
 We can do this by first specifying a disk as our footprint — identifying the shape of the local neighborhood:
 
-```{code-cell} ipython3
+```{code-cell}
 # Our footprint is a disk of radius 5 pixels.
 disk_5 = ski.morphology.disk(radius=5)
 disk_5
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Footprint as image.
 plt.imshow(disk_5);
 ```
 
 This will be our footprint when applying a `minimum` function, from `ski.filter.rank`, like this:
 
-```{code-cell} ipython3
+```{code-cell}
 hubble_eroded = ski.filters.rank.minimum(hubble_blue_ubyte, disk_5)
 plt.imshow(hubble_eroded);
 ```
@@ -164,7 +172,7 @@ You will see above, the minimum filtering with the disk footprint has the effect
 
 We have said that *erosion* is the process of applying a footprint / function filter, where the function is `minimum` (as above).  Just to show this is the case, here we use the `ski.morphology.erosion` function to apply the same operation, and get exactly the same result:
 
-```{code-cell} ipython3
+```{code-cell}
 hubble_eroded_again = ski.morphology.erosion(hubble_blue_ubyte, disk_5)
 # We get exactly the result we got by applying the minimum filter above.
 np.all(hubble_eroded_again == hubble_eroded)
@@ -205,7 +213,7 @@ Scipy `ndimage` to offset the footprint centering by a given number of pixels.  
 
 It can be easier to think of erosion (and dilation) in terms of their effects on simple binary (True / False, 1 / 0) images.
 
-```{code-cell} ipython3
+```{code-cell}
 # Make a binary square.
 square = np.array([[0, 0, 0, 0, 0, 0, 0],
                    [0, 0, 0, 0, 0, 0, 0],
@@ -220,14 +228,14 @@ plt.imshow(square);
 Let's get fancy and ostentatious now, and invest in some diamonds, by which we
 mean, let's use `ski.morphology.diamond()` to construct a new footprint:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a `diamond` footprint.
 # Changing `radius` will change the size of the diamond.
 diamond = ski.morphology.diamond(radius=1)
 diamond
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(diamond);
 ```
 
@@ -236,7 +244,7 @@ Using `ski.morphology.diamond(radius=1)` gives us a diamond shaped footprint of
 Be assured that it will look more diamond-like (diamond-y?) when set to
 a bigger `radius`...:
 
-```{code-cell} ipython3
+```{code-cell}
 diamond.shape
 ```
 
@@ -252,7 +260,7 @@ Here we erode our binary square using `ski.morphology.erosion()`.  We could
 equivalently have used `ski.filter.rank.minimum`.  In either case, we use the
 `footprint` argument to specify our footprint:
 
-```{code-cell} ipython3
+```{code-cell}
 # Erode our image.
 eroded_square = ski.morphology.erosion(square,
                                        footprint=diamond)
@@ -260,7 +268,7 @@ eroded_square = ski.morphology.erosion(square,
 eroded_square
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 plt.imshow(eroded_square);
@@ -278,7 +286,7 @@ In our specific case the *pixel neighbourhood* is the set of pixels in the image
 under the "crosshair" shape of the footprint. In other words, the neighbourhood is the set of image
 pixels under the elements of the footprint which equal 1:
 
-```{code-cell} ipython3
+```{code-cell}
 # Here is our footprint...
 diamond
 ```
@@ -296,19 +304,19 @@ together.
 What do you think will happen when we erode them using the `diamond`
 footprint? Try to predict before you check:
 
-```{code-cell} ipython3
+```{code-cell}
 # `concatenate` two `square` arrays.
 two_squares = np.concatenate([square, square], axis=1)
 plt.imshow(two_squares);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Perform the erosion.
 eroded_two_squares = ski.morphology.erosion(two_squares, diamond)
 eroded_two_squares
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the result of the erosion.
 plt.imshow(eroded_two_squares);
 ```
@@ -327,7 +335,7 @@ One way to think of this is that the erosion footprint is "searching" for areas 
 
 Let's alter our image array slightly, to see how this affects the erosion operation with our `diamond` footprint. We will place a black array pixel inside the right-hand white square:
 
-```{code-cell} ipython3
+```{code-cell}
 # A modified array.
 square_the_circle = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -349,7 +357,7 @@ of the right-hand square.
 Scroll down to the output of the cell below to see if your prediction was
 correct:
 
-```{code-cell} ipython3
+```{code-cell}
 eroded_square_the_circle = ski.morphology.erosion(square_the_circle, diamond)
 plt.imshow(eroded_square_the_circle);
 ```
@@ -383,12 +391,12 @@ filter, in terms of centering a footprint on each pixel, to select the pixel loc
 
 Let's dilate the `square` array to illustrate:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `square` array.
 square
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(square);
 ```
 
@@ -396,14 +404,14 @@ Next we use `ski.morphology.dilation()` to dilate the image.   We could,
 equivalently, use the `ski.filter.rank.maximum` function. Again, we will use
 `diamond` as our footprint:
 
-```{code-cell} ipython3
+```{code-cell}
 # Perform the dilation.
 dilated_square = ski.morphology.dilation(square,
                                          footprint=diamond)
 dilated_square
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(dilated_square);
 ```
 
@@ -422,18 +430,18 @@ shown below, using the `diamond` footprint?
 
 Try to predict before checking:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array.
 square_the_circle
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(square_the_circle);
 ```
 
 Let's see how good your prediction was:
 
-```{code-cell} ipython3
+```{code-cell}
 # Dilate the `square_the_circle` array, and show the result.
 dilated_square_the_circle = ski.morphology.dilation(square_the_circle,
                                                     footprint=diamond)
@@ -471,7 +479,7 @@ writing Wikipedia defines as "a fictional endoparasitoid extraterrestrial
 species that serves as the main antagonist of the Alien and Alien vs. Predator
 franchises". Yikes.
 
-```{code-cell} ipython3
+```{code-cell}
 # Photo by Stockcake
 # - https://stockcake.com/i/alien-head-close-up_1354662_1093149
 xenomorph = ski.io.imread("images/xenomorph.jpg", as_gray=True)
@@ -482,11 +490,11 @@ xenomorph = ski.util.img_as_bool(xenomorph).astype(int)
 xenomorph
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(xenomorph);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the attributes of `xenomorph`.
 show_attributes(xenomorph)
 ```
@@ -496,7 +504,7 @@ Scary, especially as a binary image, but not quite as scary as the `smiley` imag
 True to form, eroding this image using the `diamond` footprint increases the
 size of dark regions:
 
-```{code-cell} ipython3
+```{code-cell}
 # Erode the xenomorph.
 xeno_binary_ero_rad_1_diamond = ski.morphology.erosion(xenomorph,
                                                        footprint=diamond)
@@ -508,7 +516,7 @@ show_both(xenomorph, xeno_binary_ero_rad_1_diamond, "Eroded");
 Whilst dilation increases the size of bright regions (creating a truly, truly
 terrifying image):
 
-```{code-cell} ipython3
+```{code-cell}
 # Dilate the xenomorph.
 xeno_binary_dilate_rad_1_diamond = ski.morphology.dilation(xenomorph,
                                                            footprint=diamond)
@@ -521,20 +529,20 @@ We can alter the size of the footprint to change the nature of the effect. The
 exact change will be heavily dependent on the image array we are processing.
 Here we create a diamond with `radius=6`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create and show a larger diamond footprint.
 diamond_6 = ski.morphology.diamond(radius=6)
 diamond_6
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(diamond_6);
 ```
 
 Applied to the `xenomorph` image in an erosion operation, this has some radical
 results:
 
-```{code-cell} ipython3
+```{code-cell}
 xeno_binary_ero_rad_6_diamond = ski.morphology.erosion(xenomorph,
                                                        footprint=diamond_6)
 show_both(xenomorph,
@@ -552,7 +560,7 @@ more "matches".
 
 Dilation, again has the opposite effect of increasing brighter regions around regions that are already bright:
 
-```{code-cell} ipython3
+```{code-cell}
 # Dilate the xenomorph with the `radius = 6` diamond.
 xeno_binary_dilate_rad_6_diamond = ski.morphology.dilation(xenomorph,
                                                            footprint=diamond_6)
@@ -565,7 +573,7 @@ Remember that the increased importance of *shape* is what makes *morphological* 
 
 Below we change the shape of the footprint - here we create a rectangle (Ok, a square) of `shape` (3, 3):
 
-```{code-cell} ipython3
+```{code-cell}
 # A square footprint.
 square_SE = ski.morphology.footprint_rectangle((3, 3))
 square_SE
@@ -574,7 +582,7 @@ square_SE
 This new footprint is the same `shape` as the kernels we used on the
 [filtering page](5_mean_filter). Below we use it to erode the xenomorph image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Erode the xenomorph (with the square footprint).
 xeno_binary_ero_square = ski.morphology.erosion(xenomorph,
                                                 footprint=square_SE)
@@ -585,7 +593,7 @@ show_both(xenomorph,
 
 The difference here between eroding with a (3,3) diamond vs a (3,3) square is subtle, but changing the *morphology* (shape) of the probe changes the impact of the filtering operation. The output images are shown below - can you find regions where the different probes have resulted in different white pixels "surviving" each operation?:
 
-```{code-cell} ipython3
+```{code-cell}
 show_both(xeno_binary_ero_rad_1_diamond,
           xeno_binary_ero_square,
           "Eroded \n(3,3) Square SE",
@@ -594,7 +602,7 @@ show_both(xeno_binary_ero_rad_1_diamond,
 
 Below we use an indexing operation to "zoom in" on the same region in each image, for easier comparison. We can now see that changing the shape of the (3,3) probe (diamond vs square) alters which pixels "survive" the erosion:
 
-```{code-cell} ipython3
+```{code-cell}
 show_both(xeno_binary_ero_rad_1_diamond[100:400,400:600],
           xeno_binary_ero_square[100:400,400:600],
           "Eroded \n(3,3) Square SE",
@@ -604,7 +612,7 @@ show_both(xeno_binary_ero_rad_1_diamond[100:400,400:600],
 By comparison, dilation with this new square footprint once more enlarges brighter regions, again
 with horrific results:
 
-```{code-cell} ipython3
+```{code-cell}
 # Dilate the xenomorph, with the new footprint.
 xeno_binary_dilate_square = ski.morphology.dilation(xenomorph,
                                                     footprint=square_SE)
@@ -635,11 +643,11 @@ erosion?
 
 For comparison, here is the original binarized image:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(xenomorph);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 img = ...
 ```
@@ -655,7 +663,7 @@ We promised earlier that the `diamond` footprint would get more diamond-like
 when it is larger. To complete this exercise, you need `big_diamond` with
 `radius = 30`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Expensive!
 big_diamond = ski.morphology.diamond(radius=30)
 plt.imshow(big_diamond);
@@ -664,7 +672,7 @@ plt.imshow(big_diamond);
 Dilating with this `big_diamond` will give you the right outline, but the
 wrong colors:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution, part 1:
 xeno_big_diamond = ski.morphology.dilation(xenomorph,
                                            footprint=big_diamond)
@@ -673,13 +681,13 @@ plt.imshow(xeno_big_diamond);
 
 To get the target image, we need to `invert` the colors:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution, part 2:
 inverted_xeno_big_diamond = ski.util.invert(xeno_big_diamond)
 plt.imshow(inverted_xeno_big_diamond);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # This is not part of the solution, but here we save the resulting solution
@@ -706,19 +714,19 @@ acquire the minimum of the local neighborhood).  You have already seen erosion
 with a radius 6 disk applied to the Hubble Space Telescope image above.  Let's
 apply the `diamond_6` footprint to this image.
 
-```{code-cell} ipython3
+```{code-cell}
 # The original image (blue channel of Hubble image).
 plt.imshow(hubble_blue_ubyte);
 plt.title('Input image');
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The footprint we will use.
 plt.imshow(diamond_6)
 plt.title('Footprint');
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Eroded image.
 # We used the equivalent ski.filters.rank.minimum call previously.
 hubble_eroded = ski.morphology.erosion(hubble_blue_ubyte, diamond_6)
@@ -729,7 +737,7 @@ plt.title('Eroded image');
 We can also apply dilation.  Here pixels with *any* bright pixel in the local
 neighborhood become bright, so small bright objects will become larger.
 
-```{code-cell} ipython3
+```{code-cell}
 # Dilated image.
 hubble_dilated = ski.morphology.dilation(hubble_blue_ubyte, diamond_6)
 plt.imshow(hubble_dilated)
@@ -762,7 +770,7 @@ Some reflection might reveal what kind of effects these will have.
 For *opening*, we are first trimming the image down to objects matching the
 footprint, and then expanding the remaining objects.
 
-```{code-cell} ipython3
+```{code-cell}
 # Recalculate the eroded Hubble image.
 hubble_eroded = ski.morphology.erosion(hubble_blue_ubyte, diamond_6)
 # Calculate the opened image by dilating the eroded image.
@@ -774,7 +782,7 @@ plt.title('Hubble image, opened');
 We asserted that opening was erosion followed by dilation, but you will want
 confirmation of this:
 
-```{code-cell} ipython3
+```{code-cell}
 # Is ski.morphology.opening actually the same as dilation on erosion?
 np.all(ski.morphology.opening(hubble_blue_ubyte, diamond_6) == hubble_opened)
 ```
@@ -783,7 +791,7 @@ Closing has the effect of first expanding bright objects with the footprint
 shape (by dilation), followed by trimming those expanded objects (with
 erosion):
 
-```{code-cell} ipython3
+```{code-cell}
 # Recalculate the dilated Hubble image.
 hubble_dilated = ski.morphology.dilation(hubble_blue_ubyte, diamond_6)
 # Calculate the closing image by eroded the dilated image.
@@ -792,7 +800,7 @@ plt.imshow(hubble_closed)
 plt.title('Hubble image, closed');
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Is ski.morphology.closing actually the same as erosion on dilation?
 np.all(ski.morphology.closing(hubble_blue_ubyte, diamond_6) == hubble_closed)
 ```
@@ -801,7 +809,7 @@ As you can see, in this particular case, the closed image is rather similar to
 the original, but this will depend, as usual, on the shape and size of the
 footprint in relation to the objects in the image.
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(hubble_blue_ubyte)
 plt.title('Hubble original image');
 ```
@@ -814,7 +822,7 @@ the [`smiley`](0_images_as_numpy_arrays) array, let's look at the
 
 This takes a binary image and finds its "skeleton" - e.g. the centerline of shapes in the image, and marks it out with a [single pixel-wide set of lines](https://scikit-image.org/docs/0.25.x/auto_examples/applications/plot_morphology.html#skeletonize):
 
-```{code-cell} ipython3
+```{code-cell}
 # Skeletonize the xenomorph (skeletonomorph?)
 skeletonized_xenomorph = ski.morphology.skeletonize(xenomorph)
 plt.imshow(skeletonized_xenomorph);
@@ -823,17 +831,17 @@ plt.imshow(skeletonized_xenomorph);
 We can also do this with less nightmarish results, to other images, such as the
 much more friendly `horse` from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import the `horse` image from `ski.data`
 horse = ski.data.horse()
 plt.imshow(horse);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(horse)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Skeletonize `horse`.
 skeleton_horse = ski.morphology.skeletonize(horse == 0) # The image must be binary numeric, not Boolean, to `skeletonize`.
 plt.imshow(skeleton_horse);

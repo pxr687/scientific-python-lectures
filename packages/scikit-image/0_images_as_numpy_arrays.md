@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 ---
 
 # Images as NumPy arrays
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-0
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -72,7 +72,7 @@ we can look at as we would any picture.
 
 First, we will import some Python libraries:
 
-```{code-cell} ipython3
+```{code-cell}
 # Library imports.
 # The Numpy library stores and manipulates arrays.
 import numpy as np
@@ -86,7 +86,7 @@ reasons we will discuss later, when dealing with images it is best to manually
 control the `dtype` we use, rather than letting NumPy or other libraries
 decide it for us:
 
-```{code-cell} ipython3
+```{code-cell}
 # A two-dimensional numpy array of 1's and 0's.
 two_D_ones_and_zeros = np.array([[1, 0,],
                                  [0, 1,]],
@@ -100,7 +100,7 @@ Look at the output of the cell above. This is how NumPy shows us the contents of
 This array is small enough that we can easily see its shape. If we so wish, we
 can also use the `.shape` attribute to confirm the dimensions:
 
-```{code-cell} ipython3
+```{code-cell}
 # The `.shape` attribute
 two_D_ones_and_zeros.shape
 ```
@@ -157,7 +157,7 @@ to `plt.matshow()`. We will use `plt.axis('off')` to avoid some distracting
 labels on the image *axes*.  In our case the image axes are on the left and at
 the top of the image.
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array using `plt.matshow()`.
 plt.matshow(two_D_ones_and_zeros)
 plt.axis('off');
@@ -172,7 +172,7 @@ array. Compare the "raw" array to the plot above - you'll see that the yellow
 squares correspond to 1's in the original array, and the blue squares
 correspond to 0's:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array ("raw" NumPy output).
 two_D_ones_and_zeros
 ```
@@ -181,7 +181,7 @@ We will now create the same visualisation, but will allow Matplotlib to show
 us the default axis ticks, as we will not use `plt.axis('off')` to clear the
 axes of the plot:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array via `plt.matshow()`
 plt.matshow(two_D_ones_and_zeros);
 ```
@@ -191,12 +191,12 @@ integer index location of each element. For instance, the element in the
 top-left corner is at row/column coordinate (0, 0), the element in the
 top-right corner is at (0, 1) and so on:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the element in the top-left (0, 0) location
 two_D_ones_and_zeros[0, 0]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the element in the top-right (0, 1) location
 two_D_ones_and_zeros[0, 1]
 ```
@@ -288,7 +288,7 @@ x 100 = 480.
 We have saved the file in the following path in the directory this notebook is
 stored in: `images/two_D_ones_and_zeros_from_plot.png`.
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the image.
 plt.matshow(two_D_ones_and_zeros)
 
@@ -303,7 +303,7 @@ Loading files using Scikit-image (`skimage`) will be covered on [later pages](2_
 
 *Note*: for reasons that will become clear later, we set the `as_gray` argument to `True` to ensure the image has the same number of dimensions as our original array.
 
-```{code-cell} ipython3
+```{code-cell}
 # Import the input/output module from `skimage`.
 from skimage import io
 
@@ -325,7 +325,7 @@ We have used `plt.matshow()` so far on this page. Perhaps more commonly, you wil
 
 Using the (more common) `plt.imshow()` can lead to some different and potentially slightly confusing default axis tick labels, for very small (e.g. low-resolution) image arrays:
 
-```{code-cell} ipython3
+```{code-cell}
 # Visualize our array with `plt.imshow()`
 plt.imshow(two_D_ones_and_zeros);
 ```
@@ -341,7 +341,7 @@ axes with the *array pixel coordinates*. Compare the output from the cell
 below (from `plt.matshow()`) to the output of the cell above (from
 `plt.imshow()`) to see the difference in the default axis values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Use `plt.matshow()` - the axis ticks now show the array pixel coordinates
 # which are the integer indexes of each value in the image array
 plt.matshow(two_D_ones_and_zeros);
@@ -355,7 +355,7 @@ Why does our image array display in vibrant purple and yellow, you may ask? This
 
 We can adjust the color by changing the `cmap` argument of `plt.matshow()` - for instance, we can change the plot to visualise the array using a grayscale map:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array, change the colourmap.
 plt.matshow(two_D_ones_and_zeros,
             cmap="gray"); # Specify the colourmap
@@ -370,7 +370,7 @@ Personally, we think a better term here would be "white-level", but the term "gr
 
 Our image array so far contains only 1's and 0's; you might naturally ask "what happens if we use other numbers, how does this affect the color/gray-level of the display image?". To demonstrate, in the cell below, we create a new two-dimensional array which contains decimal numbers 0 and 1.
 
-```{code-cell} ipython3
+```{code-cell}
 # A two dimensional numpy array of numbers between 0 and 1.
 two_D_other_numbers= np.array([[0,  1],
                                [0.5, 0.3]])
@@ -380,14 +380,14 @@ two_D_other_numbers
 
 These numbers are again of the `float64` `dtype`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `dtype`.
 two_D_other_numbers.dtype
 ```
 
 Let's show this image using the grayscale colormap:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the new array (using Matplotlib).
 plt.matshow(two_D_other_numbers,
            cmap="gray");
@@ -395,14 +395,14 @@ plt.matshow(two_D_other_numbers,
 
 You can compare this visualisation of the image to the "raw" array output from the cell below. You'll notice that *larger* numbers are represented with *lighter* squares, and *smaller* numbers are represented with *darker* squares. When we are using `float64` data, as we are here, you can think of each pixel value (0, 1 or in between) as specifying the gray-level as a percentage - with 1 being 100%, 0 being 0%, 0.5 being 50% and so on:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the new array (from the NumPy output).
 two_D_other_numbers
 ```
 
 This "larger numbers as lighter shades, lower numbers as darker shades" principle will also apply if we use larger integer numbers:
 
-```{code-cell} ipython3
+```{code-cell}
 # Make 'em bigger!
 two_D_other_numbers_bigger = two_D_other_numbers * 100
 two_D_other_numbers_bigger
@@ -410,7 +410,7 @@ two_D_other_numbers_bigger
 
 Using larger numbers, the *maximum* number will be colored lightest, and the *minimum* number will be colored darkest:
 
-```{code-cell} ipython3
+```{code-cell}
 # Visualise the array containing the larger numbers.
 plt.matshow(two_D_other_numbers_bigger,
             cmap="gray");
@@ -418,7 +418,7 @@ plt.matshow(two_D_other_numbers_bigger,
 
 We can make the color mapping more explicit and interpretable by using the [`plt.colorbar()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.colorbar.html) function:
 
-```{code-cell} ipython3
+```{code-cell}
 # Add a colorbar.
 plt.matshow(two_D_other_numbers,
           cmap="gray")
@@ -429,7 +429,7 @@ The colorbar on the right of the image now shows us which number in the array - 
 
 Importantly, both our image arrays contain only *one numeric value per array pixel*. For each colormap (`viridis` vs `gray`) each single numeric value maps to a darker or lighter display color. Let's view the plots side-by-side with each colormap, for comparison:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the plots side-by-side.
 plt.subplot(1, 2, 1) # Creat the first subplot.
 plt.matshow(two_D_other_numbers,
@@ -446,7 +446,7 @@ We will talk more about color in the [next tutorial](1_color_images_as_numpy_arr
 
 We can change the default colormap for the rest of the plots we create in this session by using the code in the cell below. See [here](https://matplotlib.org/stable/tutorials/introductory/customizing.html) for more information on how to change Matplotlib's default behaviour across every session:
 
-```{code-cell} ipython3
+```{code-cell}
 # Set 'gray' as the default colormap
 plt.rcParams['image.cmap'] = 'gray'
 ```
@@ -465,7 +465,7 @@ You now understand the fundamentals of the computer representation of images! Be
 
 Let's dive deeper by using some new two-dimensional image arrays with more complex array pixel arrangements. First, we make an array with 15 rows and 8 columns. **Please inspect the contents of the array carefully!**:
 
-```{code-cell} ipython3
+```{code-cell}
 # Another array.
 mostly_blank_canvas = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                                 [0, 0, 0, 1, 0, 0, 0, 0],
@@ -486,12 +486,12 @@ mostly_blank_canvas = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
 mostly_blank_canvas
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the shape.
 mostly_blank_canvas.shape
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `dtype`.
 mostly_blank_canvas.dtype
 ```
@@ -500,7 +500,7 @@ From looking at the "raw" array (from the NumPy output of the cell above the las
 
 *Note:* this array is now large enough that we get interpretable index labels with `plt.imshow()` e.g. labels which show the integer index location of each array pixel.
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the newest array.
 plt.imshow(mostly_blank_canvas);
 ```
@@ -511,7 +511,7 @@ You can see that this is an image in the intuitive sense. It is a *picture* by a
 
 What about the array below? What do you think this will show when we visualise it? Try to make your prediction from looking at the "raw" numbers:
 
-```{code-cell} ipython3
+```{code-cell}
 what_is_it = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                        [0, 0, 0, 1, 1, 0, 0, 0],
                        [0, 0, 0, 1, 1, 0, 0, 0],
@@ -533,7 +533,7 @@ what_is_it
 
 Let's see how good your prediction was:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array.
 plt.imshow(what_is_it);
 ```
@@ -550,7 +550,7 @@ become the last row, and the last row will become the first row. Let's apply
 this function to our present image, and inspect the corresponding "raw"
 output:
 
-```{code-cell} ipython3
+```{code-cell}
 # Flip the array.
 flipped_array = np.flip(what_is_it)
 
@@ -562,7 +562,7 @@ What do you think the array now depicts? How will it look when we visualise it w
 
 Let's take a look:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the flipped array graphically.
 plt.imshow(flipped_array);
 ```
@@ -582,7 +582,7 @@ So, remember this maxim: *"image processing" is when we do something that analyz
 
 All of the principles we have seen apply both to the very small, low-resolution images we looked at above, and also to more complex images. The cell below loads in a picture of a Xenomorph (a creature from the [Alien film franchise](https://en.wikipedia.org/wiki/Alien_(franchise))). We show the image with `plt.imshow()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in and `imshow` the image, with a colorbar.
 xeno = io.imread("images/xenomorph.jpg", as_gray=True)
 plt.imshow(xeno)
@@ -594,7 +594,7 @@ plt.colorbar();
 
 Scary stuff. This image will seem slightly less intimidating when we see that it is, in fact, nothing by a 2D NumPy array of pixel intensity values. We promise it cannot hurt you:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the NumPy "raw" view of the `xeno` array
 xeno.round(2) # We round the numbers for display, to make them nicer to view.
 ```
@@ -610,7 +610,7 @@ These same principles apply to images of any complexity, including those produce
 
 Now over to you to create some [computer art](https://en.wikipedia.org/wiki/Computer_art). Your job is to recreate the (slightly terrifying) image in the output of the cell below, **using only a NumPy array and `plt.matshow()`.** Run the cell to show the image.
 
-```{code-cell} ipython3
+```{code-cell}
 # Importing a custom function to create the image.
 import skitut
 
@@ -624,7 +624,7 @@ The array you create should have `.shape` of (11, 8) - so 11 rows and 8 columns.
 
 *Hint 2*: You may also want to investigate placing [`plt.grid()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.grid.html) in the last line of the cell above, and re-running the cell, in order to make it easier to identify row/column coordinates...
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ...
 ```
@@ -638,7 +638,7 @@ The array you create should have `.shape` of (11, 8) - so 11 rows and 8 columns.
 
 You only need an array of 1's and 0's to create this image. From looking at the numbers on the axes of the plot in the output of the cell above, you can see that "eyes" need to begin on the 3rd row, and the corners of the mouth need to begin on the 6th row, and so on. Likewise the column locations can be read from the vertical axis. Here is the array which will exactly recreate the image:
 
-```{code-cell} ipython3
+```{code-cell}
 # The image array.
 smiley = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                    [0, 0, 0, 0, 0, 0, 0, 0],
@@ -659,7 +659,7 @@ plt.matshow(smiley);
 
 Run the cell below to show the exact integer index locations of the 1's (all other locations should be 0's).
 
-```{code-cell} ipython3
+```{code-cell}
 # Print the (row, column) coordinates of the array pixels with the value "1"
 print("Row/column coordinates of 1's in the `smiley` array:")
 for val_1, val_2 in zip(np.where(smiley)[0], np.where(smiley)[1]):

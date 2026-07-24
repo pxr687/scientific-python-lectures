@@ -6,7 +6,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -65,7 +65,7 @@ Scikit-image.
 
 First, some standard imports and a helper function to display our results
 
-```{code-cell} ipython3
+```{code-cell}
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -91,7 +91,7 @@ In some images, global or local contrast may be sufficient to separate regions o
 
 Let's try this on an image of a textbook.
 
-```{code-cell} ipython3
+```{code-cell}
 text = ski.data.page()
 image_show(text);
 ```
@@ -100,7 +100,7 @@ image_show(text);
 
 A histogram simply plots the frequency (number of times) values within a certain range appear against the data values themselves.  It is a powerful tool to get to know your data - or decide where you would like to threshold.
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = plt.subplots(1, 1)
 ax.hist(text.ravel(), bins=256, range=[0, 255])
 ax.set_xlim(0, 256);
@@ -110,7 +110,7 @@ ax.set_xlim(0, 256);
 
 Try simple NumPy methods and a few different thresholds on this image.  Because *we* are setting the threshold, this is *supervised* segmentation.
 
-```{code-cell} ipython3
+```{code-cell}
 text_segmented = text < 100  # Try different values here
 image_show(text_segmented);
 ```
@@ -129,7 +129,7 @@ These functions generally return the threshold value(s), rather than applying it
 
 Try `otsu` and `li`, then take a look at `local` or `sauvola`.
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception, remove-output]
 
 # Hit tab with the cursor after the underscore, try several methods
@@ -144,7 +144,7 @@ Thresholding can be useful, but is rather basic and a high-contrast image will o
 
 For this section, we will use the `astronaut` image and attempt to segment Eileen Collins' head using supervised segmentation.
 
-```{code-cell} ipython3
+```{code-cell}
 # Our source image
 astronaut = ski.data.astronaut()
 image_show(astronaut);
@@ -152,7 +152,7 @@ image_show(astronaut);
 
 The contrast is pretty good in this image for her head against the background, so we will simply convert to grayscale with `rgb2gray`.
 
-```{code-cell} ipython3
+```{code-cell}
 astronaut_gray = ski.color.rgb2gray(astronaut)
 image_show(astronaut_gray);
 ```
@@ -170,7 +170,7 @@ We must have a set of initial parameters to 'seed' our segmentation for this.  L
 
 This could be done interactively, with a GUI, but for simplicity we will start at the point [100, 220] and use a radius of 100 pixels. We add just a little trigonometry in this helper function...
 
-```{code-cell} ipython3
+```{code-cell}
 def circle_points(resolution, center, radius):
     """Generate points defining a circle on an image."""
     radians = np.linspace(0, 2*np.pi, resolution)
@@ -184,12 +184,12 @@ def circle_points(resolution, center, radius):
 points = circle_points(resolution=200, center=[100, 220], radius=100)[:-1]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Try different values for alpha.  Can you do better than we did?
 snake = seg.active_contour(astronaut_gray, points, alpha=0.2)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = image_show(astronaut)
 ax.plot(points[:, 1], points[:, 0], '--r', lw=3)
 ax.plot(snake[:, 1], snake[:, 0], '-b', lw=3);
@@ -212,7 +212,7 @@ polygon.
 
 Here is `ski.draw.polygon` in action, for the `snake` contour above:
 
-```{code-cell} ipython3
+```{code-cell}
 mask_shape = astronaut.shape[:-1]  # 2D mask shape (no color).
 face_mask = np.zeros(mask_shape)
 in_face_rows, in_face_cols = ski.draw.polygon(snake[:, 0],
@@ -221,7 +221,7 @@ in_face_rows, in_face_cols = ski.draw.polygon(snake[:, 0],
 face_mask[in_face_rows, in_face_cols] = 1
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = image_show(astronaut)
 ax.imshow(face_mask, alpha=0.3);
 ```
@@ -237,7 +237,7 @@ One good analogy for random walker uses graph theory.
 
 We will reuse the seed values from our previous example.
 
-```{code-cell} ipython3
+```{code-cell}
 astronaut_labels = np.zeros(astronaut_gray.shape, dtype=np.uint8)
 ```
 
@@ -245,7 +245,7 @@ The random walker algorithm expects a label image as input.  Any label above zer
 
 There is also a masking feature where anything labeled -1 will never be labeled or traversed, but we will not use it here.
 
-```{code-cell} ipython3
+```{code-cell}
 indices = ski.draw.circle_perimeter(100, 220, 25)
 
 astronaut_labels[indices] = 1
@@ -254,12 +254,12 @@ astronaut_labels[points[:, 0].astype(int), points[:, 1].astype(int)] = 2
 image_show(astronaut_labels);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Experiment with different beta values here.  Can you do a better job than we have?
 astronaut_segmented = seg.random_walker(astronaut_gray, astronaut_labels, beta=2500)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Check our results
 fig, ax = image_show(astronaut_gray)
 ax.imshow(astronaut_segmented == 1, alpha=0.3);
@@ -277,12 +277,12 @@ This approach is most suited for areas which have a relatively uniform color or 
 
 Can we accomplish the same task with flood fill?
 
-```{code-cell} ipython3
+```{code-cell}
 seed_point = (100, 220)  # Experiment with the seed point
 flood_mask = seg.flood(astronaut_gray, seed_point, tolerance=0.3)  # Experiment with tolerance
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = image_show(astronaut_gray)
 ax.imshow(flood_mask, alpha=0.3)
 ax.plot(220, 100, 'bo');  # Show the seed point.
@@ -296,7 +296,7 @@ Let's think outside the box:
   it and the collar?
 * Is there any way to increase the contrast between the background and skin?
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception, remove-output]
 
 seed_bkgnd = (100, 350)  # Background
@@ -310,7 +310,7 @@ flood_background = seg.flood(better_contrast, seed_bkgnd, tolerance=tol_bkgnd)
 flood_collar = seg.flood(better_contrast, seed_collar, tolerance=tol_collar)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception, remove-output]
 
 fig, ax = image_show(better_contrast)
@@ -319,7 +319,7 @@ fig, ax = image_show(better_contrast)
 ax.imshow(flood_background | flood_collar, alpha=0.3);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 flood_mask2 = seg.flood(astronaut[..., 2], (200, 220), tolerance=40)
 fig, ax = image_show(astronaut[..., 2])
 ax.imshow(flood_mask | flood_mask2, alpha=0.3);
@@ -335,12 +335,12 @@ Sometimes, human input is not possible or feasible - or, perhaps your images are
 
 There are many analogies to machine learning in unsupervised segmentation.  Our first example directly uses a common machine learning algorithm under the hood - K-Means.
 
-```{code-cell} ipython3
+```{code-cell}
 # SLIC works in color, so we will use the original astronaut
 astronaut_slic = seg.slic(astronaut)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # label2rgb replaces each discrete label with the average interior color
 image_show(ski.color.label2rgb(astronaut_slic, astronaut, kind='avg'));
 ```
@@ -357,11 +357,11 @@ This algorithm iterates a level set, which allows it to capture complex and even
 
 This algorithm takes a few seconds to run.
 
-```{code-cell} ipython3
+```{code-cell}
 chan_vese = seg.chan_vese(astronaut_gray)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = image_show(astronaut_gray)
 ax.imshow(chan_vese == 0, alpha=0.3);
 ```
@@ -374,11 +374,11 @@ Chan-Vese has a number of parameters, which you can try out!  In the interest of
 
 This method oversegments an RGB image (requires color, unlike Chan-Vese) using another machine learning technique, a minimum-spanning tree clustering.  The number of segments is not guaranteed and can only be indirectly controlled via `scale` parameter.
 
-```{code-cell} ipython3
+```{code-cell}
 astronaut_felzenszwalb = seg.felzenszwalb(astronaut)  # Color required
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 image_show(astronaut_felzenszwalb);
 ```
 
@@ -389,7 +389,7 @@ image_show(astronaut_felzenszwalb);
 
 We found lots of regions!  How many is that?
 
-```{code-cell} ipython3
+```{code-cell}
 # Find the number of unique labels
 n_labels = ...
 ```
@@ -397,7 +397,7 @@ n_labels = ...
 To see if the labels make sense, label them with the region average (see above
 with SLIC):
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception, remove-output]
 
 astronaut_felzenszwalb_colored = ... # Your code here
@@ -412,14 +412,14 @@ image_show(astronaut_felzenszwalb_colored);
 :class: dropdown
 :::
 
-```{code-cell} ipython3
+```{code-cell}
 n_labels = np.unique(astronaut_felzenszwalb).size
 n_labels
 ```
 
 To label the regions with the region average:
 
-```{code-cell} ipython3
+```{code-cell}
 astronaut_felzenszwalb_colored = ski.color.label2rgb(
     astronaut_felzenszwalb,
     astronaut,
@@ -446,7 +446,7 @@ Remember how the concept behind random walker was functionally looking at the di
 
 We have RAGs in Scikit-image, in the `graph` sub-module:
 
-```{code-cell} ipython3
+```{code-cell}
 rag = ski.graph.rag_mean_color(astronaut, astronaut_felzenszwalb + 1)
 ```
 
@@ -456,7 +456,7 @@ Now we show just one application of a very useful tool - `skimage.measure.region
 documentation](http://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.regionprops)
 for all of the features that can be quantified per-region!
 
-```{code-cell} ipython3
+```{code-cell}
 # Regionprops ignores zero, but we want to include it, so add one
 regions = ski.measure.regionprops(astronaut_felzenszwalb + 1)
 
@@ -467,7 +467,7 @@ for region in regions:
 
 `display_edges` is a helper function to assist in visualizing the graph.
 
-```{code-cell} ipython3
+```{code-cell}
 def display_edges(image, g, threshold):
     """Draw edges of a RAG on its image
     Returns a modified image with the edges drawn.Edges are drawn in green
@@ -502,7 +502,7 @@ def display_edges(image, g, threshold):
     return image
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception, remove-output]
 
 # All edges are drawn with threshold at infinity
@@ -512,7 +512,7 @@ image_show(edges_drawn_all);
 
 Try a range of thresholds out, see what happens.
 
-```{code-cell} ipython3
+```{code-cell}
 threshold = 5 # Experiment with this value.  You can do better than this.
 
 edges_drawn_few = display_edges(astronaut_felzenszwalb_colored, rag, threshold)
@@ -523,7 +523,7 @@ image_show(edges_drawn_few);
 
 Once you are happy with the (dis)connected regions above, the graph can be cut to merge the regions which are still connected.
 
-```{code-cell} ipython3
+```{code-cell}
 final_labels = ski.graph.cut_threshold(astronaut_felzenszwalb + 1, rag, threshold)
 final_label_rgb = ski.color.label2rgb(final_labels, astronaut, kind='avg')
 
@@ -532,7 +532,7 @@ image_show(final_label_rgb);
 
 How many regions exist now?
 
-```{code-cell} ipython3
+```{code-cell}
 np.unique(final_labels).size
 ```
 
@@ -553,7 +553,7 @@ Chelsea's nose, and 1 for pixels inside the nose area.
 We've given you starting coordinates for Chelsea's nose and right eye, but you
 can choose your own if you prefer.
 
-```{code-cell} ipython3
+```{code-cell}
 chelsea = ski.data.chelsea()
 fig, ax = image_show(chelsea)
 
@@ -576,7 +576,7 @@ filtered image.  But any successful method is fine.
 :class: dropdown
 :::
 
-```{code-cell} ipython3
+```{code-cell}
 cat_gray = ski.color.rgb2gray(chelsea)
 
 # Use the utility routine above.
@@ -600,7 +600,7 @@ ax.plot(reye_points[:, 1], reye_points[:, 0], '--r', lw=3)
 ax.plot(reye_snake[:, 1], reye_snake[:, 0], '-b', lw=3);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 cat_sobel = ski.filters.sobel(chelsea[..., 0])
 nose_mask = seg.flood(cat_sobel, tuple(nose)[::-1], tolerance=0.03)
 

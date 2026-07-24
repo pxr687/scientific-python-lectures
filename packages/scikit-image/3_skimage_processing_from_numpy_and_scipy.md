@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-3
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -42,7 +42,7 @@ Let's again build a simple image array, and look at the ways we can use NumPy al
 
 First, we create do our usual imports, and create our image array:
 
-```{code-cell} ipython3
+```{code-cell}
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage as ski
@@ -83,7 +83,7 @@ We have [already encountered](np-flip) the use of `np.flip()` as a tool for
 rudimentary image manipulation. We use it to, well, flip an image array on its
 head:
 
-```{code-cell} ipython3
+```{code-cell}
 # Flip the array.
 flipped_i = np.flip(i_img)
 
@@ -91,7 +91,7 @@ flipped_i = np.flip(i_img)
 flipped_i
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Display the array with Matplotlib.
 plt.imshow(flipped_i);
 ```
@@ -105,7 +105,7 @@ ways to this same destination. Provided we want to *double* (or triple, or
 quadruple) the size along a given dimension, we can achieve what we want using
 `np.repeat()`.
 
-```{code-cell} ipython3
+```{code-cell}
 # Double the image, by repeating each row.
 doubled_i_rows = np.repeat(i_img,
                            repeats=2,
@@ -115,18 +115,18 @@ doubled_i_rows = np.repeat(i_img,
 doubled_i_rows
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Display the array with Matplotlib.
 plt.imshow(doubled_i_rows);
 ```
 
 We can compare the attributes, including the `shape` of each array, using a custom function we defined in the first cell of this notebook:
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(i_img)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(doubled_i_rows)
 ```
 
@@ -134,7 +134,7 @@ We can see that we have twice the number of rows in the `doubled_i_rows` image.
 
 We can also double along the columns, by setting `axis=1`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Double along the columns.
 doubled_i_cols = np.repeat(i_img,
                            repeats=2,
@@ -142,18 +142,18 @@ doubled_i_cols = np.repeat(i_img,
 doubled_i_cols
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(doubled_i_cols);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Indeed, the columns have doubled.
 show_attributes(doubled_i_cols)
 ```
 
 By combining these operations, we can double along both the rows and the columns:
 
-```{code-cell} ipython3
+```{code-cell}
 # Double the whole image.
 doubled_i =  np.repeat(i_img,
                        repeats=2,
@@ -164,11 +164,11 @@ double_doubled_i =  np.repeat(doubled_i,
 double_doubled_i
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(doubled_i);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The original image size was (15, 8).
 show_attributes(double_doubled_i)
 ```
@@ -195,7 +195,7 @@ Min Pixel Value: 0.0
 
 *Hint*: you may want to investigate NumPy functions for combining arrays
 
-```{code-cell} ipython3
+```{code-cell}
 i_exclam = i_img.copy()
 # YOUR CODE HERE
 ```
@@ -211,7 +211,7 @@ You can do this in one line of code by using a combination of `np.concat()`, `np
 
 Combined with `np.flip()` we can produce the desired result in one line of code:
 
-```{code-cell} ipython3
+```{code-cell}
 # Combine the two `i_img` arrays, flip the second.
 plt.imshow(np.concat([i_img, np.flip(i_img)]));
 ```
@@ -228,7 +228,7 @@ plt.imshow(np.concat([i_img, np.flip(i_img)]));
 
 Here again is the `i_img` array, and a printout of its attributes:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(i_img)
 show_attributes(i_img);
 ```
@@ -254,7 +254,7 @@ Min Pixel Value: -1.0
 *Hint:* run the function `hints.split_i()`, which was imported at the beginning
 of this notebook, to see a helpful hint.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 split_i = ...
 ```
@@ -268,7 +268,7 @@ split_i = ...
 
 The target image can be created using the `np.diff()` function, which calculates the difference between adjacent values in an array. By default `np.diff()` operates in steps of 1 across the columns:
 
-```{code-cell} ipython3
+```{code-cell}
 # Calculate the difference between values along the columns, in steps of 1.
 split_i_solution = np.diff(i_img)
 
@@ -295,7 +295,7 @@ When we subtract along the column, with `np.diff()` the third value is subtracte
 
 Essentially we are detecting *edges* (big changes in intensity between adjacent pixels) in the horizontal direction (e.g. within each row, along the columns):
 
-```{code-cell} ipython3
+```{code-cell}
 # Show before/after applying `np.diff()` to the image array.
 print(f'\nBefore:\n {i_img}')
 print(f'\nAfter:\n {split_i_solution}')
@@ -307,7 +307,7 @@ White areas (pixel = 1) indicate a change between pixels in the horizontal direc
 
 We can detect big changes (edges) in the *vertical* direction by telling `np.diff()` to operate along the rows, rather than along the columns:
 
-```{code-cell} ipython3
+```{code-cell}
 vertical_gradients = np.diff(i_img,
                              axis=0) # Subtract along the rows, not the columns.
 
@@ -327,7 +327,7 @@ shape, and returns an output image of the requested size.  Because all
 computer images are at least 2D arrays, this involves changing the shape of
 the image. Let's demonstrate this with the following image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create an image array.
 squares = np.array([[1, 0,],
                     [0, 1,]],
@@ -337,14 +337,14 @@ squares = np.array([[1, 0,],
 squares
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array, visualised with Matplotlib
 plt.matshow(squares);
 ```
 
 What happens if we resize `squares` to (10, 10)? We will use the optional Boolean `preserve_range` argument for forward compatibility with the next big release of the Scikit-image package.  It has the effect of preventing some automatic processing of the range of values in the image array on input.
 
-```{code-cell} ipython3
+```{code-cell}
 # Pass our `squares` array to the `ski.transform.resize()` function.
 squares_ten_by_ten = ski.transform.resize(squares,
                                           output_shape=(10, 10),
@@ -354,12 +354,12 @@ squares_ten_by_ten = ski.transform.resize(squares,
 squares_ten_by_ten
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the image attributes.
 show_attributes(squares_ten_by_ten)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Display the image.
 plt.imshow(squares_ten_by_ten);
 ```
@@ -368,7 +368,7 @@ Well, that is certainly more artistic than the original!
 
 We now have many more `unique` values in the output array than there were in the input array (the input array contained only 0's and 1's), because `skimage` is *interpolating* for many new pixels.  *Interpolation* is the process of estimating values for the new pixels which fall in between the array pixels from the original array image, based on the weighted average of the values of the original pixels to which they are nearest.
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `unique` values.
 np.unique(squares_ten_by_ten)
 ```
@@ -387,7 +387,7 @@ interpolation](https://en.wikipedia.org/wiki/Nearest-neighbor_interpolation).
 This method of interpolation (estimation) merely uses the nearest existing
 pixel to give the value for any new pixel in the output image.
 
-```{code-cell} ipython3
+```{code-cell}
 # Pass our `squares` array to the `ski.transform.resize()` function.
 squares_ten_by_ten = ski.transform.resize(squares,
                                           output_shape=(10, 10),
@@ -411,32 +411,32 @@ Another common image manipulation we may want to do is to rotate an image.
 Should we only want to rotate by increments of 90 degrees, we can use the
 helpfully named `np.rot90()` function:
 
-```{code-cell} ipython3
+```{code-cell}
 # Rotate the image.
 rotated_i = np.rot90(i_img)
 rotated_i
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(rotated_i);
 ```
 
 We can control the number of rotations with the `k` argument:
 
-```{code-cell} ipython3
+```{code-cell}
 # Rotate the image, twice!
 rotated_i_180 = np.rot90(i_img,
                          k=2) # Two 90 degree rotations.
 rotated_i_180
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(rotated_i_180);
 ```
 
 Rotating in increments of 90 degrees will not change the *size* (e.g. number of pixels) in the array, however it will change the integer index location of the pixel values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the shape of the original image and both 90 degree rotated images.
 plt.subplot(1, 3, 1)
 plt.title(f"`.shape` = {i_img.shape}")
@@ -449,7 +449,7 @@ plt.title(f"`.shape` = {rotated_i_180.shape}")
 plt.imshow(rotated_i_180);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Original image and 90 degree rotations all have the same number of elements (15*8 = 120)
 i_img.size == rotated_i.size == rotated_i_180.size
 ```
@@ -461,7 +461,7 @@ bring in SciPy, another foundation library for Scikit-image. The SciPy
 function `ndimage.rotate()` offers more flexible rotation. However, rotating
 by other angles will alter both the `shape` and `size` of the output image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import SciPy using the conventional name (`sp`).
 import scipy as sp
 
@@ -473,19 +473,19 @@ rotated_i_193 = sp.ndimage.rotate(i_img,
 rotated_i_193
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Render the image graphically.
 plt.imshow(rotated_i_193);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the attributes of the rotated image.
 show_attributes(rotated_i_193)
 ```
 
 The cell below will loop through some different rotation angles, the `shape` of each image is shown below each plot:
 
-```{code-cell} ipython3
+```{code-cell}
 # A for loop to show multiple rotations, and the effect on
 # the shape of the resultant image array.
 plt.figure(figsize=(12, 4))
@@ -507,7 +507,7 @@ the pixels it adds, where the `shape` of the output image is larger than the
 
 We can disable this behaviour by settings `reshape=False`, however, this means that we will clip any parts of the array that have been rotated out of the field of view of the original array shape.
 
-```{code-cell} ipython3
+```{code-cell}
 # A for loop to show multiple rotations, and the effect on
 # the shape of the resultant image array, but this time
 # we do not allow SciPy to reshape the output arrays.
@@ -528,7 +528,7 @@ for i, i_2 in enumerate(np.arange(361, step=45)):
 
 Let's now look now at how rotating image arrays is handled in `skimage`. Image rotation, which we saw above using `np.rot90` and `scipy.ndimage.rotate()` can be achieved using the straightforwardly named `ski.transform.rotate()`, and the syntax works identically to `scipy.ndimage.rotate()`. All this rotating has left us thirsty and caffeine-deprived, so let's get some `coffee`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import and show an image.
 coffee = ski.data.coffee()
 plt.imshow(coffee);
@@ -536,7 +536,7 @@ plt.imshow(coffee);
 
 We can achieve easy and flexible rotation with `ski.transform.rotate()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Rotate the `coffee` image with `skimage`.
 # resize=True ensures all the original image fits inside the output.
 rotated_coffee = ski.transform.rotate(coffee,
@@ -548,7 +548,7 @@ plt.imshow(rotated_coffee);
 
 The cell below plots a variety of rotations, using `skimage.transform.rotate()` to perform each rotation, this time disabling resize of the output to fit the rotated input.
 
-```{code-cell} ipython3
+```{code-cell}
 # Many rotations...
 plt.figure(figsize=(16, 10))
 for i, i_2 in enumerate(np.arange(361, step=45)):
@@ -568,7 +568,7 @@ Rotating is a different operation that flipping the image with `np.flip`.  Flipp
 
 The cell below demonstrates `np.flip`-ping an image, as well as `np.rot`-ating an image by 180 degrees:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in `camera`
 camera = ski.data.camera()
 
@@ -589,7 +589,7 @@ Similarly, rotations differ from transpose operations on the array.
 
 Specifically for 90 degree rotations, you might be tempted to use a NumPy shortcut, and use the `.T` (transpose) method. This however, will do something different to rotation. The cell below demonstrates the `.T` method, with the `camera` image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Transpose `camera`.
 camera_transposed = camera.T
 show_attributes(camera_transposed)
@@ -599,7 +599,7 @@ plt.title("camera.T");
 
 We now show a 90 degree rotation, using `ski.transform.rotate()`
 
-```{code-cell} ipython3
+```{code-cell}
 # Rotate by 90 degrees.
 plt.imshow(ski.transform.rotate(camera, 
                                 angle=90))
@@ -612,18 +612,18 @@ The difference here is that transposing an image switches the rows and columns, 
 
 Pay attention to the location of the spoon in the `coffee` image. First, we `ski.transform.rotate()` it by 90 degrees. Then, we show it `.transpose`d, switching the rows and columns. As `coffee` is a 3D image, the `.T` method will produce an error, because the color channels will be moved into the wrong dimension - to avoid this we use the `.transpose` method, to keep the color channels in the third dimension, whilst switching the rows and columns:
 
-```{code-cell} ipython3
+```{code-cell}
 # The `shape` of the original `coffee` image.
 coffee.shape
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Why we cannot use the `.T` method. We get an array which
 # is the wrong `shape` for a color image!
 coffee.T.shape
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Move the columns into the rows, the rows into the columns, and leave the
 # color channels in the third dimension.
 coffee_transposed = coffee.transpose((1, 0, 2))
@@ -637,7 +637,7 @@ show_attributes(coffee_transposed)
 Compare this to a 90 degree rotation via `skimage`; pay attention to the
 spoon!
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the difference between rotating and transposing.
 plt.subplot(1, 2, 1)
 plt.imshow(ski.transform.rotate(coffee, angle=90, resize=True))
@@ -664,12 +664,12 @@ Your mission now is to transform `camera` into this slightly brain-bending image
 
 For comparison, here is the original `camera` image and its attributes:
 
-```{code-cell} ipython3
+```{code-cell}
 camera = ski.data.camera()
 plt.imshow(camera)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(camera)
 ```
 
@@ -690,7 +690,7 @@ arrays together to complete the current exercise...
 *Caution:* you may run into some errors/odd outcomes because of `dtype`s
 here... so use the `ski.util` conversion functions if you need to...
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 look_at_me = ski.data.camera()
 ```
@@ -706,7 +706,7 @@ Here we need a transpose operation, followed by a rotation, followed by a concat
 
 That is a mouthful, let's break it down. First we transpose the `camera` array, we can use `.T` here rather than `.transpose` as we are dealing with a 2D grayscale image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Transpose `camera`.
 camera = ski.data.camera()
 mirror_camera = camera.T
@@ -715,7 +715,7 @@ plt.imshow(mirror_camera);
 
 Now the image is transposed, we have achieved our "mirror" effect. To get this mirrored cameraman to look the other guy in the eye, we now need to rotate the image 270 degrees, for which we use `ski.transform.rotate()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Rotate and show.
 rotated_mirror_camera = ski.transform.rotate(mirror_camera,
                                              angle=270,
@@ -725,7 +725,7 @@ plt.imshow(rotated_mirror_camera);
 
 Now, we must combine the images, using `np.concat()`, combining along the columns (`axis = 1`). First, however, we need to ensure the `dtype`s match! If we don't we get an unexpected result:
 
-```{code-cell} ipython3
+```{code-cell}
 # Combine the images, non-matching `dtype`s...
 look_at_me = np.concat([camera, rotated_mirror_camera], axis=1)
 plt.imshow(look_at_me);
@@ -733,19 +733,19 @@ plt.imshow(look_at_me);
 
 Oops. This has occurred because `ski.transform.rotate()` has converted the image to the `float64` dtype, whereas the original is `uint8`:
 
-```{code-cell} ipython3
+```{code-cell}
 # The attributes of the original image (look at the `dtype`).
 show_attributes(camera)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The attributes of the rotated mirror image (look at the `dtype`).
 show_attributes(rotated_mirror_camera)
 ```
 
 Using `ski.util.img_as_ubyte()` will ensure that the pixel values match, giving us our final, surreal result:
 
-```{code-cell} ipython3
+```{code-cell}
 # Ensure matching `dtype`s.
 rotated_mirror_camera = ski.util.img_as_ubyte(rotated_mirror_camera)
 
@@ -756,7 +756,7 @@ plt.imshow(look_at_me);
 
 If in doubt, check the `dtype`!
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # We regenerate and store the output image for page generation, used above.
@@ -776,14 +776,14 @@ plt.savefig('images/look_at_me.png')
 
 For this exercise, you should load in the `cat` image from `ski.data`. Here is the original `cat` image:
 
-```{code-cell} ipython3
+```{code-cell}
 cat = ski.data.cat()
 plt.imshow(cat)
 ```
 
 The original image has the following attributes:
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(cat)
 ```
 
@@ -805,7 +805,7 @@ Min Pixel Value: 0.0
 
 *Hint*: Note the yellow tinge to the image.  You can achieve this tinge by modifying the weights of the colors in the image.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -818,7 +818,7 @@ Min Pixel Value: 0.0
 
 The solution here again involves multiple steps. First we load in the `cat` image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in and show the `cat` image.
 cat_solution = ski.data.cat()
 show_attributes(cat_solution)
@@ -827,7 +827,7 @@ plt.imshow(cat_solution);
 
 Next, to replicate the yellow-y tone of the target image, we "switch off" the blue color channel (because red + green = yellow):
 
-```{code-cell} ipython3
+```{code-cell}
 # Make it yellow!
 cat_solution[:, :, 2] = 0
 plt.imshow(cat_solution);
@@ -837,7 +837,7 @@ The target image has the `.shape` (30, 30, 3); the original image has the `.shap
 
 To get the correct output image size, we must *downscale* the image. To do this, we can use `ski.transform.resize()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Downscale the image.
 cat_solution = ski.transform.resize(cat_solution,
                                     output_shape=(30, 30, 3))
@@ -850,7 +850,7 @@ You'll notice that downsizing the image has seriously downgraded the quality. Th
 
 Now, we can see that the target image requires a rotation, through good judgment, or just trial and error, we can work out that this needs to be 45 degrees. We can also see that the image of the downscaled cat does not "fit" inside the final image. As such, we need to rotate *without resizing* the image. By default, `resize=False` so we can leave it on the default setting:
 
-```{code-cell} ipython3
+```{code-cell}
 # Rotate and show the result.
 cat_solution = ski.transform.rotate(cat_solution,
                                     angle=45)
@@ -860,7 +860,7 @@ plt.imshow(cat_solution);
 
 We will leave it to you to use this image as a logo for your "Pixel Cat" [meme coin](https://en.wikipedia.org/wiki/Meme_coin).
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # We regenerate and store the output image for page generation, used above.
@@ -883,19 +883,19 @@ using specific NumPy (or `skimage`) functions.
 
 For instance, we can "shave" our `i_img` array in half, along the columns by slicing along the columns:
 
-```{code-cell} ipython3
+```{code-cell}
 # Cut in half.
 half_i = i_img[:, 4:8]
 half_i
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(half_i);
 ```
 
 Likewise along the rows (albeit the number of rows is odd!):
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(i_img[0:8, :]);
 ```
 
@@ -906,7 +906,7 @@ plt.imshow(i_img[0:8, :]);
 
 Take the original `camera` image:
 
-```{code-cell} ipython3
+```{code-cell}
 camera = ski.data.camera()
 plt.imshow(camera)
 ```
@@ -928,7 +928,7 @@ Min Pixel Value: 23
 *Hint:* using `plt.grid()` might be of use in identifying the part of the
 image you need.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 camera_crop_exercise = camera.copy()
 plt.imshow(camera);
@@ -943,7 +943,7 @@ plt.imshow(camera);
 
 This is a simple task once you know what indices you need. Using `plt.grid()` can make this information easier to obtain:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show `camera`, with a helpful grid.
 plt.imshow(camera)
 plt.grid();
@@ -951,12 +951,12 @@ plt.grid();
 
 The exact indices we used are here:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution.
 plt.imshow(camera[130:160, 240:320]);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution (attributes).
 show_attributes(camera[130:160, 240:320])
 ```
@@ -976,7 +976,7 @@ image array to replace pixels indicated by the mask with a specific value.
 Let's demonstrate with a real image — a grayscale version of the standard
 `coffee` image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Make coffee RGB image into single-channel image.
 coffee_gray = ski.color.rgb2gray(ski.data.coffee())
 show_attributes(coffee_gray)
@@ -989,7 +989,7 @@ values with a mathematical formula using the row and column indices.  In fact
 we'll do this to create a circular mask.  Bear with us, all should be come
 clear as we go.
 
-```{code-cell} ipython3
+```{code-cell}
 # Unpack and store the number of rows and number of columns.
 dim_0, dim_1 = coffee_gray.shape
 dim_0, dim_1
@@ -1011,19 +1011,19 @@ $$
 
 First we use the Numpy `meshgrid` function to return two arrays, one containing all the `i` (row) coordinates at each pixel, and another containing all the `j` (column) coordinates at each pixel.
 
-```{code-cell} ipython3
+```{code-cell}
 # indexing='ij' tells meshgrid to return `i` and `j` coordinates.  There are other modes, not relevant here.
 i_coords, j_coords = np.meshgrid(np.arange(dim_0), np.arange(dim_1), indexing='ij')
 # i coordinate for each element.
 i_coords
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # j coordinate for each element.
 j_coords
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The coordinate of the image center in pixels.  Remember that pixel indices
 # start at 0.
 c_i, c_j = (dim_0 - 1) / 2, (dim_1 - 1) / 2
@@ -1033,7 +1033,7 @@ r = 275
 
 We can then use the formula above to generate a 2D array where True (== 1) means outside the circle and False (== 0) means inside the circle.
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a circular mask.
 mask = np.sqrt((i_coords - c_i) ** 2 + (j_coords - c_j) ** 2) > r
 show_attributes(mask)
@@ -1042,7 +1042,7 @@ plt.imshow(mask);
 
 Once we have our mask - which is just a Boolean array - it is just a matter of Boolean indexing to set all the pixel values in the image to the same value, where there is a True in the corresponding element in the mask:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the mask.
 coffee_gray_masked = coffee_gray.copy()
 coffee_gray_masked[mask] = 0
@@ -1059,7 +1059,7 @@ plt.matshow(coffee_gray_masked);
 
 Start with the `camera` image:
 
-```{code-cell} ipython3
+```{code-cell}
 camera = ski.data.camera()
 plt.imshow(camera);
 ```
@@ -1088,7 +1088,7 @@ Use that formula, with some suitable value for `p`, and masking as above, to cre
 We apply the formula above to the `i` and `j` coordinates of the `camera`
 image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution pt 1.
 cam_c_i, cam_c_j = (np.array(camera.shape) - 1) / 2
 p = 55  # By experiment.
@@ -1100,14 +1100,14 @@ mask_camera = ((i_cam - cam_c_i) ** 3 + (j_cam - cam_c_j) ** 3) ** (1 / 3) > p
 plt.imshow(mask_camera);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution pt 2.
 camera_masked_solution = camera.copy()
 camera_masked_solution[mask_camera] = 1
 plt.imshow(camera_masked_solution);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # Regenerate and store the output image for page build, used above.
@@ -1126,29 +1126,29 @@ We saw *color inversion* on an [earlier page](0_images_as_numpy_arrays). This is
 
 For a binary image, this involves swapping 1s and 0s...
 
-```{code-cell} ipython3
+```{code-cell}
 # Original image
 i_img
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(i_img);
 ```
 
 ...which can be accomplished with some simple numeric operations:
 
-```{code-cell} ipython3
+```{code-cell}
 inverted_i = 1 - i_img
 inverted_i
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(inverted_i);
 ```
 
 What about a color image?
 
-```{code-cell} ipython3
+```{code-cell}
 colorwheel = ski.data.colorwheel()
 show_attributes(colorwheel)
 plt.imshow(colorwheel);
@@ -1157,7 +1157,7 @@ plt.imshow(colorwheel);
 Because the maximum value is now 255, we can subtract each array pixel value
 in each color channel from 255 to "reverse" the values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Invert the color image, manually.
 inverted_colorwheel = colorwheel.copy()
 for i in np.arange(3):
@@ -1170,7 +1170,7 @@ plt.imshow(inverted_colorwheel);
 
 `ski.util.invert()` handles color inversion, we simply pass it a color NumPy image array and *voilà!*:
 
-```{code-cell} ipython3
+```{code-cell}
 # Invert the color image, with `skimage`.
 invert_colorwheel_with_skimage = ski.util.invert(colorwheel)
 plt.imshow(invert_colorwheel_with_skimage);
@@ -1183,7 +1183,7 @@ plt.imshow(invert_colorwheel_with_skimage);
 
 Now over to you. You will be working on the `brick` image from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 brick = ski.data.brick()
 show_attributes(brick)
 plt.imshow(brick)
@@ -1213,7 +1213,7 @@ Use only NumPy indexing and Scikit-image functions to do this...
 are still NumPy arrays, and so can be passed as arguments to most `skimage`
 functions.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -1233,25 +1233,25 @@ To get every 2nd element on even numbered rows, we can use `brick[0::2, 1::2]`.
 
 This is easier to appreciate in a smaller array:
 
-```{code-cell} ipython3
+```{code-cell}
 small_arr = np.zeros((8, 8))
 small_arr
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Get every second element, on even numbered rows.
 small_arr[0::2, 1::2] = 1
 small_arr
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the small array (0 elements are now gray).
 plt.imshow(small_arr);
 ```
 
 We can invert just the pixel values at these locations, by passing the slices to `ski.util.invert()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution.
 brick_solution = ski.data.brick()
 
@@ -1261,7 +1261,7 @@ show_attributes(brick_solution)
 plt.imshow(brick_solution);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 plt.imshow(brick_solution);
@@ -1292,7 +1292,7 @@ Min Pixel Value: 24
 
 Notice the color change from the standard `cat` image.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 cat = ski.data.cat()
 plt.imshow(cat);
@@ -1308,7 +1308,7 @@ show_attributes(cat)
 
 The target image *cannot* be created using just `ski.util.invert()` on the whole `cat` image array:
 
-```{code-cell} ipython3
+```{code-cell}
 cat_solution_2 = ski.data.cat()
 plt.imshow(ski.util.invert(cat_solution_2));
 ```
@@ -1317,7 +1317,7 @@ This looks cool - if anything *cooler* than the target image - but it is not wha
 
 To recreate the target image, we must "switch" off the green color channel *before* we invert the colors:
 
-```{code-cell} ipython3
+```{code-cell}
 cat_purple = cat_solution_2.copy()
 cat_purple[:, :, 1] = 0
 plt.imshow(cat_purple);
@@ -1325,13 +1325,13 @@ plt.imshow(cat_purple);
 
 Now, when we invert the purple `cat` image, we get the target image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution.
 inverted_cat_purple = ski.util.invert(cat_purple)
 plt.imshow(inverted_cat_purple)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # Save figure for use in page above.
@@ -1350,7 +1350,7 @@ binary (True or False, 1 or 0).
 
 Let's demonstrate with a grayscale image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a grayscale image.
 # Make a random number generator, with predictable outputs.
 rng = np.random.default_rng(10)
@@ -1365,13 +1365,13 @@ random_check[random_check == 1] = rng.integers(3, 12,  # From 3 through 11.
 plt.matshow(random_check);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Convert to a binary image:
 binary_check = random_check > np.median(random_check)
 binary_check
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(binary_check);
 ```
 
@@ -1382,7 +1382,7 @@ threshold value to attempt to divide the array pixels into two classes e.g.
 two classes where the pixels in each class are maximally different from pixels
 in the other class:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get a recommended threshold from `skimage`.
 threshold = ski.filters.threshold_minimum(random_check)
 threshold
@@ -1391,7 +1391,7 @@ threshold
 We can then use this threshold to create a binary array, successfully
 binarizing our grayscale image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Binarize the array, based on the threshold.
 binary_check_from_ski = random_check > threshold
 show_attributes(binary_check_from_ski)
@@ -1404,7 +1404,7 @@ To downgrade a color image to grayscale we can use a brute force method of
 taking the mean of the three color channels, to produce a 2D monochrome image
 array:
 
-```{code-cell} ipython3
+```{code-cell}
 gray_wheel = np.mean(colorwheel, axis=2)
 plt.imshow(gray_wheel);
 ```
@@ -1426,14 +1426,14 @@ of the channels.
 
 Here is the original `colorwheel` image:
 
-```{code-cell} ipython3
+```{code-cell}
 colorwheel = ski.data.colorwheel()
 plt.imshow(colorwheel)
 ```
 
 It has the following attributes:
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(colorwheel)
 ```
 
@@ -1458,7 +1458,7 @@ or Numpy broadcasting, to apply the luminance formula, rather than slicing.
 
 *Hint*: you may need to rescale the intensity values to match the target image attributes. You may recall there is a `ski.exposure` function which can help you do this...
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -1471,7 +1471,7 @@ or Numpy broadcasting, to apply the luminance formula, rather than slicing.
 
 The solution here requires some close attention to `dtype`. To apply the luminance formula using `np.dot()` is pretty straightforward:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution pt 1.
 
 # Luminance formula coefficients
@@ -1492,7 +1492,7 @@ But this gives us min/max pixel intensity values which are not standard for
 the `float64` dtype, and will generate an error when we try to convert to
 `uint8` to match the target image:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception]
 
 # Ouch!
@@ -1501,7 +1501,7 @@ ski.util.img_as_ubyte(gray_wheel)
 
 The `ski.exposure.rescale_intensity()` function can save us again here. First, we make the values standard for a `float64` image.
 
-```{code-cell} ipython3
+```{code-cell}
 # Rescale the pixel intensity values into a legal range, for the current `dtype`.
 gray_wheel = ski.exposure.rescale_intensity(gray_wheel,
                               out_range=(0, 1))
@@ -1511,7 +1511,7 @@ show_attributes(gray_wheel)
 
 Now, we can painlessly convert to `uint8`. Finally, to match the target image, we must `ski.transform.invert()` our depressingly dreary colorwheel:
 
-```{code-cell} ipython3
+```{code-cell}
 # Convert to `uint8` `dtype`.
 gray_wheel = ski.util.img_as_ubyte(gray_wheel)
 
@@ -1521,7 +1521,7 @@ show_attributes(gray_wheel)
 plt.imshow(gray_wheel);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # Regenerate and store the output image for page generation, used above.
@@ -1538,7 +1538,7 @@ plt.savefig('images/gray_wheel.png')
 
 As always, the `ski.color` module has us covered here with the `rgb2gray()` function. We simply pass it the color array that we want to convert to grayscale, without the direct need for the luminance formula:
 
-```{code-cell} ipython3
+```{code-cell}
 # Convert color to grayscale.
 gray_colorwheel_from_ski = ski.color.rgb2gray(colorwheel)
 show_attributes(gray_colorwheel_from_ski)

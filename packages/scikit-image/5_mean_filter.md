@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 ---
 
 # Filtering with kernels - the mean filter
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-5
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -81,7 +81,7 @@ a footprint/neighborhood. To see this in action, let's build a simple mean
 filter to filter an image array. First, we perform some imports, and change
 some defaults.
 
-```{code-cell} ipython3
+```{code-cell}
 # Library imports.
 import numpy as np
 import matplotlib.pyplot as plt
@@ -101,7 +101,7 @@ from skitut import show_attributes, hints
 
 Next, we create the `random_i` image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a grayscale image array.
 random_i = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 4, 8, 0, 0, 0],
@@ -125,21 +125,21 @@ the "top" of the array. We will start our "walk" in the top-left corner of the
 array, so that each 3-by-3 slice is centered on a pixel in the second row of
 the image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Pixel values in the first neighborhood.
 i_row_start, i_col_start = 0, 0
 i_row_end, i_col_end = 3, 3
 random_i[i_row_start:i_row_end, i_col_start:i_col_end]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The second neighborhood.
 i_row_start, i_col_start = 0, 1
 i_row_end, i_col_end = 3, 4
 random_i[i_row_start:i_row_end, i_col_start:i_col_end]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The third neighborhood.
 i_row_start, i_col_start = 0, 3
 i_row_end, i_col_end = 3, 6
@@ -148,7 +148,7 @@ random_i[i_row_start:i_row_end, i_col_start:i_col_end]
 
 Obviously, this "walk" is more efficient in a for loop:
 
-```{code-cell} ipython3
+```{code-cell}
 for i in range(6):
     i_row_start, i_col_start = 0, i
     i_row_end, i_col_end = 3, i+3
@@ -218,7 +218,7 @@ at the edges), and apply our function to the footprint-selected pixels.
 The cell below defines a function that will apply this mean footprint,
 step-by-step in a for loop, to the whole image array.  Where the footprint falls off the sides of the image, we clip the footprint to fit inside the image.
 
-```{code-cell} ipython3
+```{code-cell}
 # A function to apply our crude footprint / mean algorithm.
 def three_by_three_mean_footprint(image):
 
@@ -251,7 +251,7 @@ def three_by_three_mean_footprint(image):
 Let's apply our crude footprint / mean filter to the image array, and compare
 it to the original image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply our mean filtering function.
 mean_filtered_i = three_by_three_mean_footprint(random_i)
 
@@ -297,7 +297,7 @@ values under the footprint (e.g. add the values under the footprint to give
 the sum, and then make the sum negative). You should apply this to the `coins`
 image from `ski.data`. Here is the original image:
 
-```{code-cell} ipython3
+```{code-cell}
 coins = ski.data.coins()
 show_attributes(coins)
 plt.imshow(coins)
@@ -321,7 +321,7 @@ Min Pixel Value: -1.0
 
 **DO NOT ADJUST ANY OF THE FUNCTIONS USED ABOVE WHEN MAKING YOUR FUNCTION**. Try to do this from scratch, clearly thinking about what you need to do.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 def three_by_three_negative_sum_footprint():
     ...
@@ -343,7 +343,7 @@ elements, rather than the mean. We also `rescale_intensity()` in the final
 line, to ensure pixel values fall in a typical range, for the `float64`
 `dtype`:
 
-```{code-cell} ipython3
+```{code-cell}
 def three_by_three_negative_sum_footprint_solution(image):
 
     # Convert to float `dtype`.
@@ -373,7 +373,7 @@ def three_by_three_negative_sum_footprint_solution(image):
 
 We reload in the `coins` image, to which to apply our new filter:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in and show the `coins` image.
 coins_solution = ski.data.coins()
 plt.imshow(coins_solution);
@@ -381,7 +381,7 @@ plt.imshow(coins_solution);
 
 We then apply our filter, replacing the value of the central pixel in each footprint with negative sum of the value of all the pixels under the footprint:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter and show...
 neg_sum_filter_coins = three_by_three_negative_sum_footprint_solution(
     coins_solution)
@@ -390,7 +390,7 @@ plt.imshow(neg_sum_filter_coins);
 
 Here are the attributes of the somewhat ghostly, filtered image:
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(neg_sum_filter_coins)
 ```
 
@@ -415,7 +415,7 @@ ndarray of 1’s and
 We will use `np.ones()` to generate an array in this format. We use a (9, 9)
 footprint to achieve a stronger visual effect:
 
-```{code-cell} ipython3
+```{code-cell}
 # A "footprint" to pass to `skimage`.
 footprint_9_by_9 = np.ones((9, 9))
 footprint_9_by_9
@@ -423,7 +423,7 @@ footprint_9_by_9
 
 We will use it to filter the stalwart `camera` image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import and show the `camera` image.
 camera = ski.data.camera()
 plt.imshow(camera);
@@ -434,7 +434,7 @@ footprint.  At each pixel, Scikit-image will place the footprint over the
 pixel, select the values in the image with a corresponding 1 (or True) in the
 footprint, and apply the `mean` operation to those values.
 
-```{code-cell} ipython3
+```{code-cell}
 # Mean filter the `camera` image with `skimage`
 mean_filtered_camera = ski.filters.rank.mean(camera,
                                              footprint=footprint_9_by_9)
@@ -485,18 +485,18 @@ and sum to produce the new pixel value.
 Let's implement a mean filter, using a kernel. Obviously, we start with our
 kernel (a footprint with weights). First, we define the kernel shape:
 
-```{code-cell} ipython3
+```{code-cell}
 # Define our kernel shape.
 kernel_shape = (3, 3)
 ```
 
 We'll start the kernel as a suitably shape array of ones:
 
-```{code-cell} ipython3
+```{code-cell}
 mean_kernel = np.ones(kernel_shape)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Number of pixels in the kernel.
 n = np.prod(kernel_shape)
 n
@@ -504,7 +504,7 @@ n
 
 Of course, in this case, where we've started with an array of all ones, we could also do this:
 
-```{code-cell} ipython3
+```{code-cell}
 # Number of pixels in the kernel.
 n = np.sum(mean_kernel)
 n
@@ -512,7 +512,7 @@ n
 
 A kernel is a footprint with weights.  For a mean filter, the weights throughout the kernel should be $\frac{1}{n}$, where $n$ is the number of elements in our kernel, In our case this is $\frac{1}{9}$ = 0.11:
 
-```{code-cell} ipython3
+```{code-cell}
 mean_kernel = mean_kernel * 1 / n
 mean_kernel
 ```
@@ -522,14 +522,14 @@ a 3-by-3 kernel filled with $\frac{1}{n}$ help us?
 
 Well, this value can be used to find the mean (duh!)...we'll show this quickly using just four random values:
 
-```{code-cell} ipython3
+```{code-cell}
 x = np.array([10, 21, 3, 45])
 np.mean(x)
 ```
 
 If we multiply each value by $\frac{1}{n}$ and then take the sum of those values, we get...
 
-```{code-cell} ipython3
+```{code-cell}
 n = len(x)
 div_by_n = x * 1 / n
 np.sum(div_by_n)
@@ -567,7 +567,7 @@ images and open them in a new tab/window, for easier viewing):
 
 Now, let's apply this kernel to every pixel in the image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # A new import.
 import scipy.ndimage as ndi
 
@@ -597,7 +597,7 @@ estimated edge pixels, before applying the kernel.  You will see more on this
 below, but for now, let us confirm the results are similar, but not the same,
 using values rounded to 2 decimal places.
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 # Display libraries to show mathematics nicely.
@@ -621,7 +621,7 @@ of the image). Here are the options, from the
 we can choose an option by specifying the `mode` argument to `ndi.correlate`
 (e.g. `mode = 'constant'` etc.):
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 # Print the help for the mode parameter.
@@ -637,7 +637,7 @@ Let's define a function so that we can apply the mean filter to any image,
 using the proper `scipy.ndimage.correlate()` machinery.   We'll define the
 kernel with a shape:
 
-```{code-cell} ipython3
+```{code-cell}
 def mean_filter(image_array, kernel_shape):
     footprint = np.ones(kernel_shape)
     n = np.sum(footprint)  # Number of pixels in footprint.
@@ -649,7 +649,7 @@ def mean_filter(image_array, kernel_shape):
 
 We'll apply it to a grayscale `coffee` image, originally a color image from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 coffee_gray = ski.color.rgb2gray(ski.data.coffee())
 plt.imshow(coffee_gray);
 ```
@@ -657,7 +657,7 @@ plt.imshow(coffee_gray);
 But first, we will use Numpy to add some normally distributed (Gaussian) noise
 to the image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Add some noise to the pixel values in `coffee`.
 rng = np.random.default_rng()
 # Mean 0, std 2 normal random numbers.
@@ -674,7 +674,7 @@ caused by the features of the image — such as the cup, in this case.  Although
 the averaging leads to blurring of the underlying image, it doesn't suppress
 it to anything like the same extent as the pixel-to-pixel noise.
 
-```{code-cell} ipython3
+```{code-cell}
 # Mean filter the noisy coffee image, and show the result.
 noisy_coffee_gray_mean_filtered = mean_filter(noisy_coffee_gray, (10, 10))
 plt.figure(figsize=(20, 20))
@@ -697,7 +697,7 @@ the signal has been restored.
 
 Let's try out some different kernel sizes:
 
-```{code-cell} ipython3
+```{code-cell}
 # Mean filter, with various kernel sizes.
 n_cols = 3
 plt.figure(figsize=(12, 7))
@@ -763,7 +763,7 @@ Write your function so that it can be used with kernels of different `shape`s, s
 
 *Hint:* run the `hint.strange_coffee()` function for additional help.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 strange_coffee = coffee_gray.copy()
 
@@ -783,7 +783,7 @@ The solution here involves adapting the code you find in [the mask
 section](on-masks), to build the kernel.  Let's start by building a function
 to build the kernel for given kernel shape:
 
-```{code-cell} ipython3
+```{code-cell}
 def euclid_kernel(kernel_shape):
     # i and j coordinates in the kernel.
     i_coords, j_coords = np.meshgrid(np.arange(kernel_shape[0]),
@@ -799,7 +799,7 @@ plt.imshow(euclid_kernel((25, 25)))
 
 We define our `strange_filter()` function in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 def strange_filter_solution(image_array, kernel_shape):
     return ndi.correlate(image_array,
                          euclid_kernel(kernel_shape),
@@ -809,14 +809,14 @@ def strange_filter_solution(image_array, kernel_shape):
 
 To get the exact target image, we use a kernel of `shape` (50, 50):
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the filter and show the result.
 strange_filter_coffee = strange_filter_solution(coffee_gray, (50, 50))
 show_attributes(strange_filter_coffee)
 plt.imshow(strange_filter_coffee);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # Regenerate and store the output image for page build, used above.
@@ -839,7 +839,7 @@ This is quite a strange kernel to apply! But it shows us how easy it is to achie
 We can filter a 3D color image by applying our filtering kernel to each color
 channel separately. Let's load a 3D image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in and show an image.
 astronaut = ski.data.astronaut()
 show_attributes(astronaut)
@@ -848,7 +848,7 @@ plt.imshow(astronaut);
 
 If we try to filter this image with our (3, 3) `mean_kernel` we will get an error:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception]
 
 # Oh dear.
@@ -857,7 +857,7 @@ astronaut_mean_filtered = ndi.correlate(astronaut, weights=mean_kernel)
 
 As you can see, the error results from using a 2D kernel to filter a 3D image. A simple solution to this is just to apply the filter to each color channel separately. This is done in the cell below, using a for loop to filter each channel, storing the channels separately in a dictionary, and then `np.stack()`-ing the individually filtered channels back into a 3D image:
 
-```{code-cell} ipython3
+```{code-cell}
 # A dictionary to store the individually filtered channels.
 filtered_channels = {}
 
@@ -888,7 +888,7 @@ plt.tight_layout();
 This is straightforward to do with `skimage` as well; we also use the larger
 (9, 9) `footprint_9_by_9` kernel:
 
-```{code-cell} ipython3
+```{code-cell}
 # A dictionary to store the individually filtered channels.
 filtered_channels = {}
 
@@ -923,11 +923,11 @@ using `ndi.correlate()`. This is because we used a larger kernel for the
 
 Scikit-image will also handle this using a 3D kernel.
 
-```{code-cell} ipython3
+```{code-cell}
 footprint_9_by_9_3D = np.ones((9, 9, 3))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Mean filter the color image, with `skimage`.
 astronaut_mean_filtered_ski = ski.filters.rank.mean(astronaut,
                                                     footprint=footprint_9_by_9_3D)

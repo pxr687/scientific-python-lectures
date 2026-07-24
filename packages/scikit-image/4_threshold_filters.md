@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 ---
 
 # Threshold filtering
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-4
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -34,7 +34,7 @@ specific pixel intensity values. We will show how threshold filtering works at
 the pixel-level, using `numpy` and `scipy`, and then we will show how to apply
 it in `skimage`.
 
-```{code-cell} ipython3
+```{code-cell}
 # Library imports.
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,7 +66,7 @@ When I send you the message, there is a decent chance that unwanted randomness w
 
 Imagine that the cell below attempts to send my picture message - can you see what the signal is?
 
-```{code-cell} ipython3
+```{code-cell}
 # Generate a noisy image array.
 # generate_image is our own function to generate the image and add noise.
 noisy = generate_image()
@@ -85,13 +85,13 @@ it is lower (or vice versa, depending on the comparison operator).
 
 The aim here is typically to split the pixels into distinct classes, based on their intensity values. We can use the `ndarray` `.ravel()` method to view a histogram of the pixel intensities, in order to find a threshold that might be useful to use in a filter. The `.ravel()` method "flattens" the image array to 1-D, so that it can be displayed as a histogram:
 
-```{code-cell} ipython3
+```{code-cell}
 # The `shape` of the original `noisy` image.
 print(noisy)
 noisy.shape
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Flatten to 1-D with the `.ravel()` method.
 print(noisy.ravel())
 noisy.ravel().shape
@@ -99,7 +99,7 @@ noisy.ravel().shape
 
 When we plot a histogram of the flattened image array, what we are doing is dividing the $x$-axis into intervals (e.g. 0 to 0.25), and then getting a count of how many pixel intensity values fall within each $x$-axis interval:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show a histogram of the pixel intensity values, from the "flattened" `noisy` array.
 plt.hist(noisy.ravel(),
          bins=13) # Set a reasonable number of x-axis intervals.
@@ -109,7 +109,7 @@ plt.ylabel('Pixel Count');
 
 Ok, so it looks like the distribution is trimodal. The message image is in the `float64` `dtype`, using intensities ranging from -1 to 1. Let's set a threshold filter for each dip, in between the three peaks. So, we'll try once with a threshold of -0.50, and once with a threshold of 0.25. These threshold values are shown as vertical lines on the plot below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show a histogram of the pixel intensity values, with some thresholds.
 plt.hist(noisy.ravel(), bins=13)
 plt.axvline(-0.5, color='red', label='Threshold 1')
@@ -122,13 +122,13 @@ plt.ylabel('Pixel Count');
 The filters are applied into binary images, using the `>` comparison operator,
 in the next two cells:
 
-```{code-cell} ipython3
+```{code-cell}
 # The first simple, Boolean threshold filter.
 simple_threshold_filter_1 = noisy > -0.50
 simple_threshold_filter_1
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The second simple, Boolean threshold filter.
 simple_threshold_filter_2 = noisy > 0.25
 simple_threshold_filter_2
@@ -138,7 +138,7 @@ Each threshold filter is just a Boolean array, with the same `.shape` as the ima
 
 Because we used the `>` comparison operator, only pixels larger than the threshold values will be `True`. Let's see if this clears up any of the noise:
 
-```{code-cell} ipython3
+```{code-cell}
 # Threshold filters.
 plt.figure(figsize=(10, 4))
 plt.subplot(1, 2, 1)
@@ -153,7 +153,7 @@ Ok, so the first image still looks very noisy still, but the second looks like w
 
 Let's loop through some other threshold values, between just below 0 to just larger than 0.25, to see if the clarity of the signal improves:
 
-```{code-cell} ipython3
+```{code-cell}
 # Loop through some different threshold values, and plot the results.
 plt.figure(figsize=(16, 8))
 n_plots=6
@@ -175,7 +175,7 @@ Here we have recovered a signal from a noisy image, and made the features in the
 
 Here was the original image, before the noise was added:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(original_image());
 ```
 
@@ -187,7 +187,7 @@ Reducing noise and enhancing image features are both common aims in image filter
 
 As we have seen, threshold filtering involves modifying pixel values based on a threshold value. Let's investigate other thresholding methods using a grayscale image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a grayscale image array.
 random_i = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 4, 8, 0, 0, 0],
@@ -202,14 +202,14 @@ random_i = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
 random_i
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(random_i);
 ```
 
 As we saw above, it is simple to create a Boolean mask filter, using the `>`
 comparison operator:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a Boolean array using a comparison operator.
 random_i_thresholded = random_i > 5
 print(random_i_thresholded)
@@ -218,7 +218,7 @@ plt.matshow(random_i_thresholded);
 
 This filters *out* pixels *below* the threshold value (5), by setting them to 0/`False`. Different threshold values will allow more or less pixels to "survive" the filtering operation:
 
-```{code-cell} ipython3
+```{code-cell}
 # A sole survivor!
 random_i_filtered_9 = random_i >= 9
 print(random_i_filtered_9)
@@ -230,21 +230,21 @@ plt.matshow(random_i_filtered_9);
 This threshold filtering technique can be useful for segregating the
 foreground from the background of real images, like `camera`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the `camera` image from `ski.data`.
 camera = ski.data.camera()
 # Show the "raw" `camera` array.
 camera
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show `camera` graphically.
 plt.imshow(camera);
 ```
 
 We can again use the NumPy `.ravel()` method of the `camera` array to allow us to view a histogram of the pixel intensities. We set the number of bins ($x$-axis intervals) for the histogram to be 128, to keep the plot looking smooth:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot a histogram of the `camera` pixel intensities, with 128 bins.
 histogram = plt.hist(camera.ravel(), bins=128)
 plt.xlabel('Pixel Intensity Value')
@@ -261,7 +261,7 @@ which occlude the general pattern.
 
 To illustrate this, the plot below shows the `camera` pixel intensity histograms, with too few and too many bins. The bin interval starts and ends are indicated with vertical red lines. The height on the histogram, for a given bin, is determined by the `Pixel Count` falling with the range of intensities for that bin:
 
-```{code-cell} ipython3
+```{code-cell}
 # Some plot formatting parameters (to show the bins).
 marker = '|'
 color = 'red'
@@ -299,7 +299,7 @@ is clearly trimodal, with a clear dip/separation around around 50-100, and
 another just before 200. These locations are indicated on the plot with
 vertical lines:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show some "by eye" thresholds.
 plt.hist(camera.ravel(), bins=128)
 plt.axvline(80, color='red')
@@ -313,12 +313,12 @@ using them. Remember, our aim here is to separate the pixels into distinct
 classes; we hope these two distinct pixel classes will correspond to the
 foreground and background of the image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Define a threshold, "by eye".
 crude_threshold = 80
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the filter.
 camera_threshold_filtered = camera.copy()
 camera_threshold_filtered = camera_threshold_filtered < crude_threshold
@@ -330,7 +330,7 @@ That has worked fairly well, as far as it goes, for segmenting the foreground (t
 We can show the "opposite" binary image, by reversing the comparison
 operation:
 
-```{code-cell} ipython3
+```{code-cell}
 # Using the "opposite" comparison operator.
 plt.imshow(camera > crude_threshold);
 ```
@@ -339,11 +339,13 @@ Stylish! Someone should put that on a t-shirt...
 
 +++
 
+(otsu-method)=
+
 ## Threshold filters in `skimage` - the Otsu method
 
 `skimage` contains many threshold filters, the cell below uses the `dir()` function to show the available selection:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `skimage` threshold filters.
 [fil for fil in dir(ski.filters) if fil.startswith('threshold')]
 ```
@@ -365,7 +367,7 @@ analyzing a histogram of the pixel intensities. Below we use the
 
 By specifying the `nbins` argument, we instruct the `.threshold_otsu()` function to analyse a histogram which has the same number of bins as the one we were using above:
 
-```{code-cell} ipython3
+```{code-cell}
 # Pass our `camera` array to the `threshold_otsu()` function.
 otsu_thresh = ski.filters.threshold_otsu(camera, nbins=128)
 
@@ -375,7 +377,7 @@ otsu_thresh
 
 We show the Otsu threshold (`otsu_thesh`) as a vertical line on the histogram below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the pixel intensities, and the Otsu threshold.
 plt.hist(camera.ravel(), bins=128);
 plt.axvline(otsu_thresh, color='red', label='Otsu Threshold')
@@ -386,7 +388,7 @@ plt.legend();
 
 You can see that the method finds a threshold is pretty close to the one we chose "by eye" earlier on the page. Let's apply the Otsu filter, simply by using `camera < otsu_thresh`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter in the image using the Otsu threshold.
 camera_otsu_filtered = camera < otsu_thresh
 
@@ -438,18 +440,18 @@ followed by the end-point of the last bin. We will call this array `edges`.
 
 The size of each array will vary, based on the number of bins we ask NumPy to use to make the histogram:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get `counts` and `edges`.
 counts, edges = np.histogram(camera.ravel(),
                              bins=128)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show counts.
 counts
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show `edges`.
 edges
 ```
@@ -472,35 +474,35 @@ which fall within the corresponding interval. Let's check this is correct by
 Boolean indexing `camera` to see how many pixels fall within the first
 interval (0 up to, not including 1.99):
 
-```{code-cell} ipython3
+```{code-cell}
 # For the first bin interval.
 camera[(camera >= 0) & (camera < 1.99)]
 ```
 
 Sure enough there are two pixels in the interval, which corresponds to the first value in the `counts` array:
 
-```{code-cell} ipython3
+```{code-cell}
 # The first value in the `counts` array.
 counts[0]
 ```
 
 The second interval (e.g. the next two `edges` values) runs from 1.99 up to (not including) 3.98. The second value of the `counts` array is 628, so there should be 628 pixels within this interval:
 
-```{code-cell} ipython3
+```{code-cell}
 # The second value in `counts`.
 counts[1]
 ```
 
 Let's manually get the pixels in `camera` which fall in this second bin interval:
 
-```{code-cell} ipython3
+```{code-cell}
 # For the second bin interval.
 camera[(camera >= 1.99) & (camera < 3.98)]
 ```
 
 It certainly looks like there could be 600+ values in there! We don't feel like counting, so let's verify how many pixels there are in this bin interval using `len()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Count the pixels in the second bin interval.
 len(camera[(camera >= 1.99) & (camera < 3.98)])
 ```
@@ -514,14 +516,14 @@ and final (128th) interval in the `edges` array:
 
 Ok, so we now have our deconstructed histogram. To implement the Otsu method, we next need to find the center of each bin interval (e.g. the middle point between the lower and higher number in each pair). Once we have the bin centers, we can use those to start splitting the histogram in two, to find the split that gives us the two most distinct groupings of pixels, on either side of the split. This is a simple calculation, we can get the start value of each bin interval with the following slicing operation:
 
-```{code-cell} ipython3
+```{code-cell}
 # The first value of each bin interval.
 edges[:-1]
 ```
 
 ...and we can get the second value of each bin interval with:
 
-```{code-cell} ipython3
+```{code-cell}
 # The second value of each interval.
 edges[1:]
 ```
@@ -539,7 +541,7 @@ the last bin.  `edges[1:-1]` give the *exclusive* ends of the other bins.
 
 Check the numbers in these two arrays against the image above (of the bin intervals) to verify they are correct. To get the bin center points, we just take the average of each pair:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the center of each bin.
 bin_centers = (edges[1:] + edges[:-1]) / 2
 bin_centers
@@ -547,7 +549,7 @@ bin_centers
 
 You'll see that if we plot our `bin_centers` ($x$-axis) and our pixel `counts` ($y$-axis) we get something very much resembling the `camera` histogram, with 128 bins. Below the original `camera` histogram is shown on the left, and the plot of the `bin_centers` and `counts` arrays is shown on the right:
 
-```{code-cell} ipython3
+```{code-cell}
 # Generate a plot.
 plt.figure(figsize=(14, 4))
 plt.subplot(1, 2, 1)
@@ -568,12 +570,12 @@ Here is a visualisation of splitting at the 50th bin center (which is centered
 on the pixel intensity value of 98.6). The location of the *split* is shown as
 a thick, dashed line:
 
-```{code-cell} ipython3
+```{code-cell}
 # The 50th bin center value.
 bin_centers[49]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # A function to visualise different threshold values.
 def plot_bins_with_threshold(threshold_bin_number, legend=True, axis=True):
     plt.plot(bin_centers[:threshold_bin_number],
@@ -606,7 +608,7 @@ We now effectively have two histograms, the red one (below the 50th bin center; 
 
 We can choose any bin center for the threshold, in fact, the Otsu filtering process will compare all possible thresholds/splits, comparing all of the bin centers. Multiple different splits are visualised below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Visualise multiple thresholds.
 n_threshold_plots = 6
 plt.figure(figsize=(18, 10))
@@ -623,7 +625,7 @@ Then we calculate the sum of squared deviations (`ssd`) for each side of the his
 
 The cell below defines a function which calculates the sum of the squared deviations, for a given histogram:
 
-```{code-cell} ipython3
+```{code-cell}
 def ssd(counts, centers):
     """ Sum of squared deviations from mean """
     n = np.sum(counts)
@@ -634,14 +636,14 @@ def ssd(counts, centers):
 
 Let's use this function to calculate the mean and `ssd` of each histogram, when using the 50th bin center as the threshold:
 
-```{code-cell} ipython3
+```{code-cell}
 # The mean and SSD for the left-hand histogram.
 mean_below_50th_bin, ssd_below_50th_bin, n_below_50th_bin  = ssd(counts[:49], bin_centers[:49])
 print("Mean of histogram below the 50th bin:", mean_below_50th_bin.round(2))
 print("SSD of histogram  below the 50th bin:", ssd_below_50th_bin.round(2))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The mean and SSD for the right-hand histogram.
 mean_above_50th_bin, ssd_above_50th_bin, n_above_50th_bin = ssd(counts[49:], bin_centers[49:])
 print("Mean of histogram above the 50th bin:", mean_above_50th_bin.round(2))
@@ -650,7 +652,7 @@ print("SSD of histogram above the 50th bin:", ssd_above_50th_bin.round(2))
 
 The cell below defines a convenience plotting function, the mean of each histogram is shown on the plot, as a vertical line in the same color as the histogram that it corresponds to (left or right). A horizontal line around each mean indicates the spread around that mean (FYI this spread has been converted back to the original scale of the plot, rather than the squared value of the `ssd`):
 
-```{code-cell} ipython3
+```{code-cell}
 # A convenience plotting function.
 def plot_thresh_mean_and_spread(threshold_bin_num, show_total_SSD=False, legend=True):
     plot_bins_with_threshold(threshold_bin_num, legend=legend)
@@ -702,7 +704,7 @@ for the left and right histograms.
 
 :::
 
-```{code-cell} ipython3
+```{code-cell}
 # Visualise multiple thresholds.
 n_threshold_plots = 4
 plt.figure(figsize=(18, 10))
@@ -722,7 +724,7 @@ You can think of this as finding a threshold which groups pixels such that the p
 
 The cell below will find the threshold which gives the minimum combined `ssd`:
 
-```{code-cell} ipython3
+```{code-cell}
 # An empty list to store all the `ssd` values, for all bin centers.
 total_ssds = []
 
@@ -743,7 +745,7 @@ print('Otsu threshold:', bin_centers[otsu_bin])
 
 We can see that this is the same Otsu threshold we get from `ski.filters.threshold_otsu()`, when we use the same number of bins (128).
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the Otsu threshold from `skimage`.
 ski.filters.threshold_otsu(camera,
                            nbins=128)
@@ -751,27 +753,27 @@ ski.filters.threshold_otsu(camera,
 
 Here is the graph showing the Otsu threshold, the total `ssd` is shown, in [scientific notation](https://sparrow.dev/python-scientific-notation), in the title of the plot:
 
-```{code-cell} ipython3
+```{code-cell}
 plot_thresh_mean_and_spread(otsu_bin, show_total_SSD=True)
 ```
 
 The total `ssd` for the optimal Otsu threshold is an order of magnitude smaller than for some possible other threshold values. We show a different, much worse threshold below, which has a considerably larger total `ssd` (again, the total `ssd` is shown in the title of the plot):
 
-```{code-cell} ipython3
+```{code-cell}
 # A much worse split.
 plot_thresh_mean_and_spread(10, show_total_SSD=True)
 ```
 
 Compare the spreads on each plot by looking at the horizontal lines around the mean of each histogram. You can see that the spreads are much smaller for the Otsu threshold, than for the other, suboptimal threshold. The other threshold, because it has much worse between pixel-class variance than the Otsu threshold, gives much worse image segmentation, in terms of separating foreground from background:
 
-```{code-cell} ipython3
+```{code-cell}
 # A bad segmentation, from the worse threshold value...
 plt.imshow(camera < bin_centers[10]);
 ```
 
 Admittedly that is quite a cool visual effect, but it is poor segmentation performance - it has not done a good job of splitting the foreground cameraman from the background. The `ssd`s for multiple different thresholds are shown in the title of each plot below; the `camera` image filtered to the same threshold is shown to the right of each histogram plot:
 
-```{code-cell} ipython3
+```{code-cell}
 # Visualise multiple thresholds, as well as filtering `camera` using those thresholds.
 n_threshold_plots = 6
 plt.figure(figsize=(24, 24))
@@ -791,7 +793,7 @@ Remember: Otsu's method finds the threshold which gives us the smallest *sum of 
 
 Compare the segmentation of the "best" Otsu threshold (shown below) to the poorer-performing thresholds shown on the right of the plot above - you will see substantially better foreground/background segmentation, from the optimal threshold:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show a plot of the whole Otsu filtering process.
 plt.figure(figsize=(14, 3))
 plt.subplot(1, 3, 1)
@@ -872,7 +874,7 @@ array([0, 1, 2])
 
 You can use a "by eye" method to decide your thresholds, from inspecting a histogram of `camera`. Or you can investigate using the `skimage` Otsu filter to get thresholds for more than two pixel classes...
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -885,7 +887,7 @@ You can use a "by eye" method to decide your thresholds, from inspecting a histo
 
 Inspecting the histogram by eye can get you quite far here. First, we plot the histogram of `camera`. We roughly identify low frequency regions which separate the modes of the distribution:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the histogram, and estimate, by eye thresholds.
 plt.hist(camera.ravel(), bins=128)
 plt.axvline(80, color='red', label='By eye threshold 1')
@@ -897,7 +899,7 @@ plt.legend(bbox_to_anchor=(1, 1));
 
 We chose 80 and 190, but you could get similar results with other nearby values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Save our estimated thresholds as separate variables.
 by_eye_1 = 80
 by_eye_2 = 190
@@ -911,7 +913,7 @@ We then use some Boolean indexing to:
 
 * Set values to the right of the higher threshold to 2.
 
-```{code-cell} ipython3
+```{code-cell}
 # Copy to avoid overwriting.
 camera_region_solution = camera.copy()
 
@@ -934,7 +936,7 @@ A less "back of the envelope" method is to use `ski.filters.threshold_multiotsu(
 
 The syntax is very straightforward, and the function returns a list of the threshold values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Multi-Otsu filter.
 otsu_cam3_solution = ski.filters.threshold_multiotsu(camera,
                                                      classes=3) # How many pixel classes?
@@ -944,7 +946,7 @@ otsu_cam3_solution
 
 We plot the thresholds below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the histogram, and the Multi-Otsu thresholds.
 plt.hist(camera.ravel(), bins=128)
 plt.axvline(otsu_cam3_solution[0], color='darkred', label='Multi-Otsu Threshold 1')
@@ -956,12 +958,12 @@ plt.legend(bbox_to_anchor=(1, 1));
 
 We can use Boolean indexing (as above) to set the pixel values according to the thresholds, by looping through the thresholds.  But to be more elegant, we'll use `np.digitize` to do the same job:
 
-```{code-cell} ipython3
+```{code-cell}
 bins = np.concatenate([[0], otsu_cam3_solution, [np.max(camera) + 1.]])
 bins
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Digitize maps image values x to output values thus:
 # - where bins[0] <= x < bins[1] -> output 0,
 # - where bins[1] <= x < bins[2] -> output 1
@@ -972,7 +974,7 @@ camera_region_solution_multiotsu = np.digitize(camera, bins)
 plt.imshow(camera_region_solution_multiotsu);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # We regenerate and store the output image for page generation, used above.
@@ -991,7 +993,7 @@ This function is both a filtering function and a plotting function. Behind the s
 
 We run the function in the cell below. The name of each thresholding method is shown as the title of each plot:
 
-```{code-cell} ipython3
+```{code-cell}
 # Try all thresholding methods, and plot the results.
 ski.filters.try_all_threshold(camera,
                               verbose=False, # Avoid clutter from printouts.

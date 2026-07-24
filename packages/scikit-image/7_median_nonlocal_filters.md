@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 ---
 
 # More filters: the median filter and non-local filters
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-7
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -34,7 +34,7 @@ this below.
 
 As normal, we begin with some imports:
 
-```{code-cell} ipython3
+```{code-cell}
 # Library imports.
 import numpy as np
 import matplotlib.pyplot as plt
@@ -114,7 +114,7 @@ Recall that, in Python, indices start at 0, and therefore, the central element i
 
 Consider the numbers in the array below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Some numbers.
 nums = np.array([10, 4, 5, 8, 7])
 nums
@@ -122,12 +122,12 @@ nums
 
 We get the mean from: $ \large \text{mean} = \frac{\sum x_i...x_n}{n} $
 
-```{code-cell} ipython3
+```{code-cell}
 # Take the sum, divide by n.
 np.sum(nums) / len(nums)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Compare to the same calculation from NumPy.
 np.mean(nums)
 ```
@@ -135,7 +135,7 @@ np.mean(nums)
 Whereas we get the median from: $ \large \text{median}
 = X_{\text{sorted}}[\frac{n - 1}{2}]$
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the median.
 sorted_nums = np.sort(nums) # Sort the values, low to high.
 print(f"Sorted `nums`: {sorted_nums}")
@@ -145,7 +145,7 @@ median = sorted_nums[int(len(sorted_nums)/2)] # Index to get the median.
 median
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Compare to NumPy.
 np.median(nums)
 ```
@@ -185,13 +185,13 @@ black-to-white, white-to-black etc). Let's look at why the median filter is
 "edge preserving", by expanding the `nums` array into a low-resolution image,
 using `np.tile()` and `np.reshape()`.
 
-```{code-cell} ipython3
+```{code-cell}
 # Make `nums` into a image array.
 nums_img = np.reshape(np.tile(nums, reps=3), (3, 5))
 nums_img
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show as an image.
 plt.matshow(nums_img);
 ```
@@ -211,7 +211,7 @@ along with the median value of the neighborhood:
 
 We can also show this in "Python space", using a for loop:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show some local neighborhoods of `nums_img` and their medians.
 for i in range(3):
     i_row_start, i_col_start = 0, i
@@ -231,7 +231,7 @@ We can apply the median filter in `skimage` using `ski.filters.median()`.
 Again,  we supply a `footprint` argument to determine the size and shape of
 each pixel's "local neighborhood":
 
-```{code-cell} ipython3
+```{code-cell}
 # Median filter `nums_img`.
 nums_median_filtered = ski.filters.median(nums_img,
                                           footprint=np.ones((3,3)))
@@ -240,13 +240,13 @@ nums_median_filtered
 
 Compare to the original `nums_img` array below:
 
-```{code-cell} ipython3
+```{code-cell}
 nums_img
 ```
 
 The effect on the "edges" of the image is easier to see graphically:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the images.
 plt.subplot(1, 2, 1)
 plt.imshow(nums_img)
@@ -261,7 +261,7 @@ edges have been merged into more prominent ones nearby. We show this, for compar
 alongside a mean filtered version of `nums_img`, filtered using the same size
 `footprint` ((3, 3)):
 
-```{code-cell} ipython3
+```{code-cell}
 # Avoid dtype warning.  In our case, `nums_img` already fits within the 
 # np.uint8 range (0 to 255).
 nums_img = nums_img.astype(np.uint8)
@@ -289,7 +289,7 @@ noise whilst preserving edges to a greater extent than some other filters. We
 will demonstrate the median filter again with the `brick` image from
 `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in the `brick` image.
 brick = ski.data.brick()
 show_attributes(brick)
@@ -299,7 +299,7 @@ plt.imshow(brick);
 We will also filter `brick` using a mean filter, with the same size kernel as
 the median filter:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply a median filter.
 median_filtered_brick = ski.filters.median(brick,
                                            footprint=np.ones((9,9)))
@@ -348,7 +348,7 @@ Essentially, this process flattens the image intensity histogram into a uniform
 distribution, so that there is less variance between the pixel intensities. The
 image below illustrates this principle:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 gray_coffee = ski.color.rgb2gray(ski.data.coffee())
@@ -374,7 +374,7 @@ plt.title('Equalised');
 We will demonstrate the histogram equalisation filter with the `eagle` image
 from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in the `eagle` image.
 eagle = ski.data.eagle()
 show_attributes(eagle)
@@ -385,7 +385,7 @@ Let's first view the intensity histogram of `eagle`, before we apply the
 filter. As we know, we can use the `.ravel()` array method to flatten this 2D
 image to 1D, and then inspect a histogram of the pixel intensities:
 
-```{code-cell} ipython3
+```{code-cell}
 # Flatted to 1D.
 one_D_eagle = eagle.ravel()
 
@@ -406,7 +406,7 @@ average of the adjacent values.
 
 *Note*: we could also use `ski.exposure.histogram()`, to the same effect.
 
-```{code-cell} ipython3
+```{code-cell}
 # Centers and bin intervals, from the histogram of the flattened `eagle` image.
 counts, bin_intervals = np.histogram(one_D_eagle,
                                      bins=256)
@@ -444,7 +444,7 @@ count by the total number of pixels in the image. Note that we could also do
 this using the optional `density=True` argument to `np.histogram()`, but we do
 it manually to show what the operations involve:
 
-```{code-cell} ipython3
+```{code-cell}
 # Centers and bin intervals, from the histogram of the flattened `eagle` image.
 # Get the total number of pixels.
 n_pixels = len(one_D_eagle)
@@ -455,7 +455,7 @@ plt.xlabel('Pixel Intensity')
 plt.ylabel('Pixel Probability');
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Do the `counts` sum to 1?
 print(f"\nCounts Normalized sum:\n {counts_normed.sum()}")
 ```
@@ -469,7 +469,7 @@ that bin and in all of the lower bins (e.g. the bins closer to 0 on the
 $x$-axis). Essentially it is a running total of the `counts_normed` as we move
 from left to right across the $x$-axis:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the cumulative distribution of the pixel intensities.
 cdf = np.cumsum(counts_normed)
 
@@ -484,7 +484,7 @@ loss in the calculations). Remember, we are adding up proportions here, so
 a value of 1 indicates that the final bin and all of the lower bins together
 contain 100% (proportion 1.0) of the pixels in the image:
 
-```{code-cell} ipython3
+```{code-cell}
 cdf[-1]
 ```
 
@@ -499,7 +499,7 @@ a histogram with 256 bins? Well, as a result our `cdf` array, which contains
 the running total of the proportions in a given bin and lower bins, has 256
 elements:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `shape` of the `cdf` array.
 cdf.shape
 ```
@@ -507,7 +507,7 @@ cdf.shape
 Because we count from 0, when indexing arrays, the final value in `cdf` is at
 index location 255:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the final value of the `cdf` array, at integer index location 255.
 cdf[255]
 ```
@@ -516,7 +516,7 @@ Given that `one_D_eagle` is in the `uint8` `dtype`, the maximum and minimum
 values allowed are 255 and 0.  The actual image is has maximum, minimum of 255
 and 1.
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `dtype` and `min`/`max` values of `eagle`.
 show_attributes(one_D_eagle)
 ```
@@ -534,7 +534,7 @@ Let's perform the indexing/equalisation, and then inspect the histograms, so
 this effect becomes apparent. We show this mapping first with ten pixel
 intensity values from `one_D_eagle`:
 
-```{code-cell} ipython3
+```{code-cell}
 first_ten_pixels = one_D_eagle[:10]
 first_ten_pixels
 ```
@@ -542,14 +542,14 @@ first_ten_pixels
 ...we then show the corresponding cumulative proportions that these values will
 be mapped to, when we use them as indexes for `cdf`:
 
-```{code-cell} ipython3
+```{code-cell}
 cdf[first_ten_pixels]
 ```
 
 To perform this mapping for *every* pixel intensity value, we use the following
 operation:
 
-```{code-cell} ipython3
+```{code-cell}
 # Equalise the histogram of `eagle`, by using the pixel intensity values in `one_D_eagle` (1 - 255)
 # as indexes into the `cdf` array.
 equalised_hist = cdf[one_D_eagle]
@@ -560,7 +560,7 @@ corresponding images, are shown below. We first `.reshape()` the
 `equalised_hist` back into the shape of the original, non-flattened `eagle`
 image, thus restoring its status as a 2D image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Reshape to 2D.
 eagleback_to_2D = equalised_hist.reshape(eagle.shape)
 
@@ -588,7 +588,7 @@ heightened contrast — pay particular attention to the wall behind the noble
 eagle. Each image, without the histograms, can be viewed below, for easier
 inspection:
 
-```{code-cell} ipython3
+```{code-cell}
 # Generate the plot.
 plt.figure(figsize=(14, 8))
 plt.subplot(1, 2, 1)
@@ -601,7 +601,7 @@ plt.title('Equalised Image');
 
 Let's consider how the equalisation works.   Consider the original normalised (density) histogram and the cumulative density that we calculated above:
 
-```{code-cell} ipython3
+```{code-cell}
 plat_x = [130, 200]
 fig, ax = plt.subplots(2, 1)
 ax[0].plot(bin_centers, counts_normed)
@@ -627,19 +627,46 @@ ax[1].add_patch(
 ```
 
 Now consider the low plateau in the proportional histogram between about pixel intensities of 130 to 200 (gray box).  This corresponds to a plateau in the cumulative proportion in the same region, because there are relatively few pixels in the image within this wide range.  In the original image there is a fairly wide difference (of 70) between pixels at either end of this plateau.  However, there is a small difference in cumulative density (less than 0.1) for pixels between 130 and 200.  If we replace the pixel values with the cumulative proportion values, this has the effect of compressing the image range devoted to difference along this plateau.  Conversely, for parts of the intensity range where the there is a rapid change in cumulative proportion, replacing image intensity with cumulative proportion will have the effect of expanding the available image range for those image intensities.  Thus the normalization has the effect of devoting greater image range to regions of rapid change in the original histogram.
-from matplotlib.patches import Rectangle
 
 +++
 
-The Numpy implementation of histogram equalisation has changed the `dtype` of the image because we have
-replaced values ranging from 1 to 255 with proportions ranging from 0 to 1:
+::: {note}
 
-```{code-cell} ipython3
+**Why does histogram equalization work?**
+
+This note is for those of you who would like a more complete explanation for
+why the process of replacing the image count with the corresponding value from
+the cumulative distribution function (CDF) has the effect of making the image
+histogram flat.
+
+Consider, say, a pixel with pixel intensity of 100.  See the figures above for where this is in the image histogram.
+
+We now look up this value (100) in the cumulative distribution function.  As
+you can see in the figures above, the value is about 0.6.  By definition, the
+0.6 value means that 60% of the image intensity values are less than or equal
+to this value (of 100).  Therefore, when we have replaced the pixel value of
+100 with the CDF value of 0.6, we have made it such that there are exactly 60%
+of the (new, CDF-derived) pixel values less than or equal to the new value.
+
+Have a look at [this explanation](https://benqwilson.com/blog/R8Vz/histogram-equalization-part-1-theory), and in
+particular, the last graph on that page.  You may be able to see that, by
+doing the operation above, we have made the CDF of the new values be
+a diagonal straight line (as in the graph on that page), and therefore, we
+have made the proportional histogram (that we can also call the Probability
+Density Function) be flat, with the image intensity divided into even bins.
+
+:::
+
+The Numpy implementation of histogram equalisation has changed the `dtype` of
+the image because we have replaced values ranging from 1 to 255 with
+proportions ranging from 0 to 1:
+
+```{code-cell}
 # The `dtype` and `min`/`max` values of the original image.
 show_attributes(eagle)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The `dtype` and `min`/`max` values of the filtered image.
 show_attributes(equalised_hist)
 ```
@@ -658,7 +685,7 @@ line of code. We just pass our `eagle` image to the
 `ski.exposure.equalize_hist()` function, and it will carry out all the
 operations we saw above:
 
-```{code-cell} ipython3
+```{code-cell}
 # Equalise `eagle` using `skimage.
 eagle_equalized_with_ski = ski.exposure.equalize_hist(eagle)
 
@@ -692,7 +719,7 @@ cumulative proportion. Only now this occurs without the neat indexing trick,
 there is just an intermediate (boring!) step in the mapping. We demonstrate
 this below with the `coins` image from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import the `coins` image.
 coins = ski.data.coins()
 
@@ -711,7 +738,7 @@ plt.tight_layout();
 show_attributes(coins_as_float)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Equalise the histogram.
 coins_as_float_equalised_with_ski = ski.exposure.equalize_hist(coins_as_float)
 

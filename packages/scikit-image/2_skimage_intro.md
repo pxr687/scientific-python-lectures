@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-2
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -43,7 +43,7 @@ identical to the principles we have seen for representing images in NumPy:
 
 Before exploring how `skimage` works, let's start by building some image objects to perform image manipulations on. As normal, we begin by importing some libraries:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import libraries.
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,7 +58,7 @@ from skitut import hints, show_attributes
 
 We can use some simple NumPy functions and the familiar array indexing syntax to create our familiar, exceedingly artistic, image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create an image array.
 squares = np.array([[1, 0,],
                     [0, 1,]],
@@ -68,7 +68,7 @@ squares = np.array([[1, 0,],
 squares
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Display the array as an image with Matplotlib
 plt.matshow(squares);
 ```
@@ -84,7 +84,7 @@ To include color information, our array must be of *at least* three dimensions. 
 
 As we saw previously, we can control the amount of color in the image by manipulating each channel in the third dimension:
 
-```{code-cell} ipython3
+```{code-cell}
 # Using `np.stack()` to create a multi-channel array.
 red_squares = np.stack([squares, # 1's are only present in the red channel.
                         squares * 0, # The green channel is "switched off".
@@ -96,7 +96,7 @@ plt.matshow(red_squares);
 
 We show this principle again below, for each color channel. The top row of the plot shows the channels for `uint8` data with 255 as the maximum pixel intensity value. The second row of the plot shows each channel for `float64` data, using 1 as the maximum pixel intensity value:
 
-```{code-cell} ipython3
+```{code-cell}
 # Use a custom function to plot the maximum intensity values in the diagonals, for `int` and `float` data,
 # using our familiar 1's and 0's array.
 from skitut.random_colors import plot_int_float
@@ -112,14 +112,14 @@ These are the basic aspects of images represented as NumPy arrays. Other ways of
 
 So far so good, we have an image array to experiment with. Let's import `skimage` itself. The convention for importing `skimage` (and the convention you will see in most other peoples' code) is to name the import `ski`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import statement for Scikit-image and the conventional shorthand.
 import skimage as ski
 ```
 
 Because Scikit-image represents images as NumPy arrays, *the majority of Scikit-image functions take NumPy `ndarray`s as arguments.* For instance, the `rgb2gray()` function from the `ski.color` module can take a multi-channel array, and convert it to a single channel, grayscale image. We will show this with the `red_squares` array from above:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the original `red_squares` array
 show_attributes(red_squares)
 plt.matshow(red_squares);
@@ -127,7 +127,7 @@ plt.matshow(red_squares);
 
 Now, we just pass the `squares` array to `ski.color.rgb2gray()` as an argument:
 
-```{code-cell} ipython3
+```{code-cell}
 # Convert the `red_squares` array to grayscale.
 back_to_black = ski.color.rgb2gray(red_squares)
 show_attributes(back_to_black)
@@ -144,13 +144,13 @@ You may ask why the maximum pixel values are now 0.21, rather than 1? This is be
 
 Conveniently, `skimage` ships with example image arrays included. It should come as no surprise that these are also NumPy arrays. We can access all of the built-in images through the `ski.data` module. Here we use `dir()` to show all of the available module attributes, most of which are example image arrays:
 
-```{code-cell} ipython3
+```{code-cell}
 dir(ski.data)
 ```
 
 Here we will load the `coffee` image from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in the image.
 coffee = ski.data.coffee()
 
@@ -158,19 +158,19 @@ coffee = ski.data.coffee()
 coffee
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Inspect the attributes of the image.
 show_attributes(coffee)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the image with Matplotlib.
 plt.imshow(coffee);
 ```
 
 Because these images are nothing but NumPy arrays, we can use standard array slicing to interact with them. For instance, we can use slicing to ruin the `coffee` image by placing a huge green square over it:
 
-```{code-cell} ipython3
+```{code-cell}
 ruined_coffee = coffee.copy()
 ruined_coffee[100:300, 200:400, :] = [0, 255, 0]  # [Red channel, Green channel, Blue channel]
 plt.imshow(ruined_coffee);
@@ -192,7 +192,7 @@ We have already met this module on [earlier pages](0_images_as_numpy_arrays) but
 
 For now, let's use `ski.io.imread()` to load a `.png` of the terrifying smile we hand-crafted in the earlier tutorials:
 
-```{code-cell} ipython3
+```{code-cell}
 # Read in an image file, as a single-channel image.
 smiley_from_file = ski.io.imread("images/smiley.png",
                                  as_gray=True)
@@ -201,12 +201,12 @@ smiley_from_file = ski.io.imread("images/smiley.png",
 smiley_from_file
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array (graphically).
 plt.imshow(smiley_from_file);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the attributes of the image.
 show_attributes(smiley_from_file)
 ```
@@ -217,7 +217,7 @@ Note that `ski.io.imread()` loads image files as NumPy arrays by default. This i
 
 Now, a lot of `skimage` functions serve specific purposes — like improving the quality or clarity of an image. Others are just there to look cool. The `ski.transform.swirl()` function falls into the latter category. According to the [documentation](https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_swirl.html), this function performs a non-linear deformation creating a whirlpool effect. Because `skimage` has loaded `smiley.png` as a NumPy array, we can pass the image straight to the `swirl` function:
 
-```{code-cell} ipython3
+```{code-cell}
 #  Swirl the `smiley_from_file` array.
 smiley_swirled = ski.transform.swirl(smiley_from_file,
                                      center=(3, 6), # Central pixel coordinate.
@@ -227,7 +227,7 @@ smiley_swirled = ski.transform.swirl(smiley_from_file,
 smiley_swirled
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the swirled array (graphically).
 plt.matshow(smiley_swirled);
 ```
@@ -236,7 +236,7 @@ plt.matshow(smiley_swirled);
 
 What `swirl` has done here is, well, swirled the pixels around a central point, resulting in this crooked, wonky smile. Now, if we want to save our persistently terrifying creation, we can use `ski.io.imsave()` to save images...
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [raises-exception]
 
 # OUCH!
@@ -250,7 +250,7 @@ Oh dear, what a horrible looking error for such a simple request. What has happe
 
 ...but it is telling us that there is an issue with the `dtype` of the array we are trying to save:
 
-```{code-cell} ipython3
+```{code-cell}
 smiley_swirled.dtype
 ```
 
@@ -265,7 +265,7 @@ to address them.
 
 In this case, we can convert our image array from `float64` to `uint8` using the `ski.util.img_as_ubyte()` function:
 
-```{code-cell} ipython3
+```{code-cell}
 smiley_swirled = ski.util.img_as_ubyte(smiley_swirled)
 
 smiley_swirled.dtype
@@ -273,7 +273,7 @@ smiley_swirled.dtype
 
 This format *is* supported for `.png` files, and we can painlessly save our image using `ski.io.imsave()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Saving our image (successfully).
 ski.io.imsave("images/smiley_swirled.png", # Path to save image to.
               smiley_swirled)              # Image array to save.
@@ -281,7 +281,7 @@ ski.io.imsave("images/smiley_swirled.png", # Path to save image to.
 
 We can now use `ski.io.imread()` to read the file we just saved back into memory:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load the file back in.
 load_back_in = ski.io.imread("images/smiley_swirled.png")
 
@@ -291,13 +291,13 @@ plt.imshow(load_back_in);
 
 We can see that the `dtype` of the freshly saved, freshly loaded image is indeed `uint8`:
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(load_back_in)
 ```
 
 Another option here, is just to save to another image format, like `.jpg`. Below we save the original `smiley_swirled` array as a `.jpg` file, avoiding the ugly error message:
 
-```{code-cell} ipython3
+```{code-cell}
 # Save as `.jpg`.
 ski.io.imsave("images/smiley_swirled.jpg", # Path to save image to.
               smiley_swirled)              # Image array to save.
@@ -307,7 +307,7 @@ Issues with `dtype` can be a source of errors, so it is important to be aware of
 
 *Note*: you should prefer the `ski.util` conversion functions to using the NumPy `ndarray.astype()` method, when altering image `dtype`s. This is because the `skimage` functions will respect the min/max pixel intensity value conventions shown in the table above, where `.astype()` may not. Here is a list of the `skimage` conversion functions - you will need them!:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the `skimage` `dtype` conversion functions.
 [func for func in dir(ski.util) if func.startswith('img')]
 ```
@@ -316,7 +316,7 @@ Issues with `dtype` can be a source of errors, so it is important to be aware of
 
 Before we move on, a note on `swirl` — we said earlier that it is easier to understand a manipulation at the array pixel-level using a small (low-resolution) array, but easier to appreciate its global visual effect on a larger (high-resolution) image. We saw the effect of `swirl` on `smiley_swirled`, but the nature of the visual effect can be seen more clearly when we apply it to `coffee`:
 
-```{code-cell} ipython3
+```{code-cell}
 # `swirl` the coffee image
 plt.imshow(ski.transform.swirl(coffee, strength=100));
 ```
@@ -330,7 +330,7 @@ Pretty trippy...
 
 Now investigate the use of `ski.util.random_noise()` to add extra noise to an image. Remember that in the context of image processing, noise is *randomness*. Here is the original `camera` image from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 camera = ski.data.camera()
 plt.imshow(camera);
 ```
@@ -351,7 +351,7 @@ Max Pixel Value: 1.0
 Min Pixel Value: 0.0
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -364,7 +364,7 @@ Min Pixel Value: 0.0
 
 The solution here is to `np.stack()` the `camera` image, to introduce color channels. (You could also use `np.repeat`). We then pass our 3D array to `ski.util.random_noise()`, manipulating the `var` argument to control the "level" of the noise. Specifically, `var` will control the range of the changes. Higher values of `var` means bigger absolute random values can potentially be added/subtracted from each pixel:
 
-```{code-cell} ipython3
+```{code-cell}
 # Stack to 3D.
 camera_with_noise  = np.stack([camera,
                                camera,
@@ -379,7 +379,7 @@ plt.imshow(camera_with_noise)
 show_attributes(camera_with_noise);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # We regenerate and store the output image for page generation, used above.
@@ -406,14 +406,14 @@ So far we have looked primarily at binary/monochrome single-channel image arrays
 
 RGB is a common standard, but color images of shape `(n, m, 3)` can use different representations of color to the RGB method we have seen. We call these different color representation formats *colorspaces*. `skimage` supports many of them, and contains many functions for converting image arrays between colorspaces. These functions are contained in the `ski.color` module:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the functions in `ski.color`.
 dir(ski.color)
 ```
 
 Let's load in the `cat` image from `ski.data`, to look at a different colorspace:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load the image and show it.
 cat = ski.data.cat()
 show_attributes(cat)
@@ -422,7 +422,7 @@ plt.imshow(cat);
 
 On the [previous page](1_color_images_as_numpy_arrays) we manually converted color images to grayscale, using NumPy operations. As we saw earlier on the present page, functions from the `ski.color` module, like `ski.color.rgb2gray()`, can do this more elegantly, with less code:
 
-```{code-cell} ipython3
+```{code-cell}
 # From RGB to grayscale.
 gray_cat = ski.color.rgb2gray(cat)
 show_attributes(gray_cat)
@@ -458,7 +458,7 @@ Min Pixel Value: 0.0
 
 The `cat` image array is copied for you in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 cat_for_exercise = cat.copy()
 ```
@@ -473,7 +473,7 @@ cat_for_exercise = cat.copy()
 This is a very simple operation! We can just "plug" each color channel of the
 `cat` array into the formula, using NumPy array indexing:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the formula.        Red channel.           Blue channel.          Green channel.
 cat_manual_gray = 0.2126 * cat[:, :, 0] + 0.7152 * cat[:, :, 1] + 0.0722 * cat[:, :, 2]
 # Or the same result using Numpy broadcasting.
@@ -484,7 +484,7 @@ plt.imshow(cat_manual_gray);
 However, this leaves our image with a not-standard pixel intensity range,
 given the `dtype`:
 
-```{code-cell} ipython3
+```{code-cell}
 show_attributes(cat_manual_gray)
 ```
 
@@ -496,7 +496,7 @@ images with any value range, using the colormap.  We might therefore choose to
 rescale the image to have range 0 through 1. We can use
 `ski.exposure.rescale_intensity()` to do that.
 
-```{code-cell} ipython3
+```{code-cell}
 # Ensure the correct pixel intensity range.
 cat_manual_gray = ski.exposure.rescale_intensity(cat_manual_gray,
                                                  out_range=(0, 1)) # Set the desired pixel intensity range.
@@ -518,7 +518,7 @@ Value](https://en.wikipedia.org/wiki/HSL_and_HSV).  To get a feel for how HSV
 specifies color, have a look at the Wikipedia page link, and try the [HSV
 color picker](https://www.selecolor.com/en/hsv-color-picker).
 
-```{code-cell} ipython3
+```{code-cell}
 # Convert `cat` to the HSV colorspcae
 hsv_cat = ski.color.rgb2hsv(cat)
 show_attributes(hsv_cat)
@@ -529,7 +529,7 @@ Psychedelic! Maybe this is how cats look, from the perspective of other cats (e.
 
 Let's extract the individual channels with some array indexing operations. Each channel is 2D, and therefore will render as a grayscale image when displayed with Matplotlib:
 
-```{code-cell} ipython3
+```{code-cell}
 # Extract the HSV channels.
 hue_slice = hsv_cat[:, :, 0]
 saturation_slice = hsv_cat[:, :, 1]
@@ -561,14 +561,14 @@ Red-Green-Blue-Alpha (RGBA), where Alpha is the opacity of the color.
 
 Let's see what that extra slice does, using our tried and true `squares` image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array.
 plt.matshow(squares);
 ```
 
 Let's `np.stack()` this image array into 4-D, and set only the 1st and 4th channels to have nonzero values (e.g. so all values in the other, green and blue, channels are 0's):
 
-```{code-cell} ipython3
+```{code-cell}
 # Create an array with 4 channels (e.g. 4 slices in the third dimension).
 four_channel_stack = np.stack([squares,
                                squares * 0, # All 0's in the green channel.
@@ -586,7 +586,7 @@ solid, non-see through color.
 
 Let's set it lower:
 
-```{code-cell} ipython3
+```{code-cell}
 four_channel_stack[:, :, 3] = four_channel_stack[:, :, 3] * 0.25     # Fourth slice nonzero values to equal .25
 
 plt.matshow(four_channel_stack);
@@ -594,7 +594,7 @@ plt.matshow(four_channel_stack);
 
 This new transparency channel is called an *alpha channel*. Let's add one to our `cat` image. We'll duplicate the first slice of the third dimension, as the fourth slice:
 
-```{code-cell} ipython3
+```{code-cell}
 four_channel_stack_cat = np.stack([cat[:, :, 0],
                                    cat[:, :, 1],
                                    cat[:, :, 2],
@@ -615,7 +615,7 @@ Pretty ghostly...maybe *this* is how cats look to one another...
 
 Your task now, is to manipulate `camera` to make it look like the target image below. Use whatever `numpy`, `skimage` and numerical operations you need, based on what you have seen on this page and the previous pages. Here is the original `camera` image:
 
-```{code-cell} ipython3
+```{code-cell}
 camera = ski.data.camera()
 plt.imshow(camera)
 ```
@@ -652,7 +652,7 @@ Here are some things to pay attention to, in the target image, to help you think
 
 *Hint 1:* run the function `hints.camera()` for some additional help if you get stuck.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -671,7 +671,7 @@ The left-hand side of the image has variance in *transparency* - pixels where th
 
 The distinction between the left-hand side and right-hand side of the image is that in the right-hand side, the transparency channel values are all uniform, though less than maximum opacity, giving a hazy effect. This can be achieved by NumPy array indexing, and setting values in the alpha channel in the right-hand side of the image to all equal 0.5:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution.
 
 # Convert the image to `float64`.
@@ -693,7 +693,7 @@ show_attributes(camera_4D)
 plt.imshow(camera_4D);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # Regenerate and store the output image for page generation, used above.
@@ -703,7 +703,7 @@ plt.savefig('images/shoegaze.png')
 
 Now, if you tried to do the `float64` conversion using the `numpy` `.astype()` method, things will seem OK at first:
 
-```{code-cell} ipython3
+```{code-cell}
 # DO NOT DO THIS!
 camera_as_float_error = camera.astype(float)
 show_attributes(camera_as_float_error)
@@ -713,7 +713,7 @@ BUT the original `camera` image is `dtype` `unit8`, with a maximum array value o
 
 This maximum value violates the conventions, in `skimage` and `matplotlib` for `float64` images. We can again `np.stack()` and manipulate this mutant array, without error at first...
 
-```{code-cell} ipython3
+```{code-cell}
 camera_4D_error = np.stack([camera_as_float_error * 0.5,
                             camera_as_float_error,
                             camera_as_float_error * 0.5,
@@ -725,7 +725,7 @@ show_attributes(camera_4D_error)
 
 ...until we try to display it with Matplotlib:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(camera_4D_error);
 ```
 
@@ -746,7 +746,7 @@ To show this, below we use `ski.io.imread()` to load an image in one of these fo
 
 *Note:* here we are loading in a `.png` image, this is a highly atypical format to store medical images, but we use it just for illustration of a 3D image that does not contain color, using a familiar image format... The original image file, in the more standard [Nifti format](https://brainder.org/2012/09/23/the-nifti-file-format), is [here](https://github.com/neurolabusc/niivue-images/blob/main/Iguana.nii.gz).
 
-```{code-cell} ipython3
+```{code-cell}
 # Read in the `iguana` image, show its attributes.
 iguana = ski.io.imread("images/brainy.png")
 show_attributes(iguana)
@@ -754,7 +754,7 @@ show_attributes(iguana)
 
 We can see now that there are 179 slices in the third dimension - however, we do not have 179 color channels! Each "slice" is a different literal "slice" of the iguana's head. Below, we "walk" through the slices, showing those early in the stack (`iguana[:, :, 10]`) as well as those in the middle (`iguana[:, :, 84]`) and at the end (`iguana[:, :, 178]`):
 
-```{code-cell} ipython3
+```{code-cell}
 # Show multiple slices of the iguana's head...
 plt.figure(figsize=(16, 6))
 for count, k in enumerate(range(10, 84, 8)):

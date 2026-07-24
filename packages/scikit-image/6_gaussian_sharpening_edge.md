@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 ---
 
 # Filtering with kernels II - Gaussian blur, sharpening and edge detection
@@ -17,13 +17,13 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-6
 
-This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "Image manipulation and processing using NumPy and SciPy" by Emmanuelle Gouillart and Gaël Varoquaux, and "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
 This page will explore additional foundational filters which use kernels, implementing them first with NumPy and SciPy, and then with Scikit-image. As usual, we begin with some imports:
 
-```{code-cell} ipython3
+```{code-cell}
 # Library imports.
 import numpy as np
 import matplotlib.pyplot as plt
@@ -49,7 +49,7 @@ from skitut import show_attributes, hints, show_mat, save_load_show_mat
 
 An important kernel-based filter with, let's be honest, a pretty cool name is the *Gaussian filter*. You may recognise the name from the famous [Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution), which we plot below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot a normal/Gaussian distribution.
 x = np.linspace(-4, 4, 10_000)
 y = sps.norm().pdf(x)
@@ -65,7 +65,7 @@ having a "bell-shape". We will talk in more detail about this further down the
 page. For now, take a look at this fancy [kernel](
 https://www.geeksforgeeks.org/deep-learning/types-of-convolution-kernels):
 
-```{code-cell} ipython3
+```{code-cell}
 # A fancy kernel.
 gaussian_like_kernel =  np.array([[0.06, 0.12, 0.06],
                                   [0.12, 0.25, 0.12],
@@ -86,7 +86,7 @@ the pattern between the individual elements clearer. The kernel values
 themselves are shown as dark blue text. The axis ticks show the integer index
 location of the kernel values, in the `gaussian_like_kernel` NumPy array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the fancy kernel, with a convenience function.
 def kernel_plot(kernel, ax=None, surface=True, elev=30, azim=-45, text=True):
     x = np.arange(kernel.shape[0])
@@ -131,14 +131,14 @@ numbers on each axis of the "floor" are the integer index locations of the
 NumPy array. And the vertical height of the red surface is the value of the
 kernel element at each row/column integer index location:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the kernel again, in NumPy, for comparison to the plot.
 gaussian_like_kernel
 ```
 
 If you prefer, you can view the NumPy array kernel with prettier graphics below:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 show_mat(gaussian_like_kernel)
@@ -148,7 +148,7 @@ Just as a final comparison between the  NumPy array kernel and the plot, here
 is the "red mountain" viewed from directly above, with the NumPy array kernel,
 in pretty graphics, shown to the right-hand side of the plot:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 def surface_mat_pair(kernel, mat_fname, fig=None):
@@ -187,7 +187,7 @@ surface_mat_pair(gaussian_like_kernel, 'images/gaussian_kernel_2.png')
 
 Remember that the kernel has only 9 values (shown as blue text on the plot), so there are no values in between the array values. If you prefer, we can visualise the kernel using a wireframe, to make it clearer that there are no values in between the kernel elements (e.g. in between the points where there is blue text):
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the fancy kernel.
 kernel_plot(gaussian_like_kernel, surface=False)
 ```
@@ -201,7 +201,7 @@ peak".[^crimson-peak].  The crimson peak is the central kernel element of
   one of Guillermo del Toro's less successful
   films](https://en.wikipedia.org/wiki/Crimson_Peak).
 
-```{code-cell} ipython3
+```{code-cell}
 # The central kernel value, at the crimson peak - check that you can also see
 # this on the graph above.
 gaussian_like_kernel[1, 1]
@@ -218,20 +218,20 @@ So array pixels which fall under higher points of the kernel's "red mountain" wi
 
 Let's use this kernel to filter the following image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Make a small image array.
 small_square = np.zeros((20, 20))
 small_square[9:11, 9:11] = 1
 small_square
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(small_square);
 ```
 
 We use use `scipy.ndimage.correlate()` to "walk" our kernel over every pixel in the image, multiply each array pixel value under the kernel by the corresponding kernel value, then take the sum of the result to replace the central pixel value:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the `gaussian_like_kernel` to filter the image.
 gaussian_like_filtered_small_square = ndi.correlate(small_square,
                                                     weights=gaussian_like_kernel)
@@ -256,7 +256,7 @@ distribution to you at the moment, but bear with us.
 
 To see the Gaussian nature of this filtering operation, let's take a look at another, larger kernel below - it has `shape` `(9, 9)`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Another kernel.
 big_gaussian_kernel = make_gaussian_kernel(9)
 np.round(big_gaussian_kernel, 2)
@@ -266,13 +266,13 @@ Can you see any pattern in the arrangement of the numbers? Where are the high
 numbers, where are the low numbers? The `big_gaussian_kernel` NumPy array is
 shown below, in prettier form, to aid your ruminations:
 
-```{code-cell} ipython3
+```{code-cell}
 show_mat(big_gaussian_kernel)
 ```
 
-We will also plot this kernel in 3D, as with the last kernel. Again, the integer index locations of the array form the horizontal ($x$ and $y$) axis values, and the values within the array are plotted on the vertical ($z$) axis.
+We will also plot this kernel in 3D, as with the last kernel. Again, the integer index locations of the array form the horizontal ($x$ and $y$) axis values, and the values within the array are plotted on the vertical ($z$) axis. 
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the new, bigger Gaussian kernel.
 kernel_plot(big_gaussian_kernel, text=False)
 ```
@@ -285,7 +285,7 @@ array. If you are running interactively, you can set `text=False` in the
 plotting function and re-run the cell, to switch the blue numbers off, if you
 wish:
 
-```{code-cell} ipython3
+```{code-cell}
 # Compare the NumPy array to the plot.
 print("\n`big_gaussian_kernel` NumPy view:\n\n", np.round(big_gaussian_kernel, 2))
 kernel_plot(big_gaussian_kernel, surface=False)
@@ -296,7 +296,7 @@ Again, to make the relationship between the NumPy array and the graph as clear
 as possible, here is the "red mountain" viewed from directly above, with the
 `big_gaussian_kernel` array shown to its right:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 surface_mat_pair(big_gaussian_kernel, 'images/big_gaussian_kernel.png')
@@ -324,7 +324,7 @@ deviation of 1.[^independence]
   explain that here, but see [Multivariate normal
   distributions](https://en.wikipedia.org/wiki/Multivariate_normal_distribution).
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot multivariate Gaussian; both x and y have a mean of 0 and std of 1.
 x = np.linspace(-5, 5, 10_00)
 y = np.linspace(-5, 5, 10_00)
@@ -348,7 +348,7 @@ ax.set_title("Multivariate Gaussian Distribution");
 Here is the plot of `big_gaussian_kernel` again, for comparison to the perfect
 Gaussian shown in the image above:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the plot of `big_gaussian_kernel` again.
 kernel_plot(big_gaussian_kernel, text = False)
 ```
@@ -363,7 +363,7 @@ prototypical multivariate Gaussian distribution.
 
 Both our `(3, 3)` kernel above, and the larger kernel we just plotted, are called [gaussian blur kernels](https://www.geeksforgeeks.org/deep-learning/types-of-convolution-kernels). Let's look at the `gaussian_like_kernel` array again, to compare it to `big_gaussian_kernel` directly:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 show_mat(gaussian_like_kernel)
@@ -371,7 +371,7 @@ show_mat(gaussian_like_kernel)
 
 When comparing to the `big_gaussian_kernel`, shown below, you can see that the pattern in the numbers is the same. The biggest value occurs in the center of the array, the smallest values are in the corners of the array. For the bigger Gaussian kernel, it is apparent that kernel values *closer* to the center are larger, the values get smaller the further we get from the central element:
 
-```{code-cell} ipython3
+```{code-cell}
 show_mat(big_gaussian_kernel)
 ```
 
@@ -389,7 +389,7 @@ influence, pixels further away will exert a weaker influence.
 Let's apply the `big_gaussian_kernel` with the `camera` image, using
 `ndi.correlate()`, as we used for the mean filter:
 
-```{code-cell} ipython3
+```{code-cell}
 # Appl the `big_gaussian_kernel` as a filter.
 big_gaussian_filtered_small_square = ndi.correlate(small_square,
                                                    weights=big_gaussian_kernel)
@@ -416,7 +416,7 @@ such, it is easier to see their effect in lower-resolution images.
 
 Below, we make a pixelated version of `camera`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Pixelate the `camera` image.
 camera = ski.data.camera()
 # Rescale to 20% of original size, this makes the image appear more pixelated.
@@ -427,7 +427,7 @@ plt.imshow(pixelated_camera);
 Below, we filter with separately with `gaussian_like_kernel` and
 `big_gaussian_kernel`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter with the small Gaussian kernel.
 gaussian_like_filtered_pixelated_camera = ndi.correlate(pixelated_camera,
                                                weights=gaussian_like_kernel)
@@ -457,7 +457,7 @@ smoothing effect, because we are blurring over more pixels.
 Gaussian filters are easy to implement in `skimage`; let's try it with the
 `cat` image from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load the `cat` image.
 cat = ski.data.cat()
 show_attributes(cat)
@@ -477,7 +477,7 @@ the central pixel:
 
 Let's apply the filter with a `sigma` of 3:
 
-```{code-cell} ipython3
+```{code-cell}
 # Gaussian filter `cat`, with `skimage`.
 plt.imshow(ski.filters.gaussian(cat, sigma=3));
 ```
@@ -486,7 +486,7 @@ Higher sigma values will introduce a blurrier effect, because for higher
 `sigma` values, pixels further from the central value within each kernel are
 exerting more influence in the averaging calculation:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot with different `sigma` values.
 plt.figure(figsize=(14, 6))
 for i, sigma in enumerate(np.arange(2, 14, 2)):
@@ -512,7 +512,7 @@ plot.
 
 It is defined as a variable in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create the strange kernel.
 almost_gaussian_kernel = np.array([[1, 1, 1, 2, 2, 2, 1, 1, 1],
                                    [1, 1, 1, 2, 2, 2, 1, 1, 1],
@@ -529,13 +529,13 @@ almost_gaussian_kernel
 
 Here it is in a nicer mathematical display:
 
-```{code-cell} ipython3
+```{code-cell}
 show_mat(almost_gaussian_kernel)
 ```
 
 We plot this oddball kernel in 3D, in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Super weird!
 kernel_plot(almost_gaussian_kernel)
 ```
@@ -544,7 +544,7 @@ It looks like take on a Gaussian with late 90s games console graphics! When we
 filter the `camera` image using this kernel, we get some strange results.
 First, we show the original `camera` image, as a starting point:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the original `camera` image.
 show_attributes(camera)
 plt.imshow(camera);
@@ -552,7 +552,7 @@ plt.imshow(camera);
 
 Now, we filter with the weird kernel:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter with the oddball kernel. (Probably) not the result we want...
 almost_gaussian_filtered_camera = ndi.correlate(camera,
                                                 weights=almost_gaussian_kernel)
@@ -570,7 +570,7 @@ With a small modification to the `dtype`, however, we can get the following
 Gaussian-like smoothing on `camera`, using the oddball
 `almost_gaussian_kernel`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Convert to `float64` dtype.
 camera_as_float = ski.util.img_as_float64(camera)
 
@@ -587,7 +587,7 @@ your pause for thought, your task is to *make adjustments to the kernel
 should be able to obtain the same smoothed image from the cell above, if you
 modify the kernel correctly. The target image is just above.  To save you scrolling, here is the psychedelic image that you should avoid:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(almost_gaussian_filtered_camera);
 ```
 
@@ -601,7 +601,7 @@ could modify the kernel...
 *Hint 2*: run the `hint.krazy_kernel_2()` function for some additional help
 regarding the source of the original error...
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 my_new_kernel = almost_gaussian_kernel.copy()
 ```
@@ -618,7 +618,7 @@ Filtering `camera` with the `almost_gaussian_kernel` results in numbers that
 are too big for the original `uint8` `dtype` to handle. Let's remind ourselves
 of the kernel values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the kernel.
 almost_gaussian_kernel
 ```
@@ -626,7 +626,7 @@ almost_gaussian_kernel
 Now, when the maximum value of the kernel gets multiplied by the maximum value
 in `camera`, we get:
 
-```{code-cell} ipython3
+```{code-cell}
 np.max(camera) * np.max(almost_gaussian_kernel)
 ```
 
@@ -638,14 +638,14 @@ This value is too large for the `uint8` `dtype` of the original camera image,
 which can only range from [0 to
 255](https://scikit-image.org/docs/0.25.x/user_guide/data_types.html).
 
-```{code-cell} ipython3
+```{code-cell}
 camera.dtype
 ```
 
 Remember that, instead of giving an error, values which overflow the maximum
 for the dtype wrap around to start again at 0:
 
-```{code-cell} ipython3
+```{code-cell}
 np.array(255, dtype=np.uint8) + 2
 ```
 
@@ -663,7 +663,7 @@ integer overflow...
 To ensure the kernel sums to 1, we just multiply the kernel by the reciprocal
 of the sum of the elements in the kernel, which in this case sum to 144:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 import sympy as sy
@@ -672,13 +672,13 @@ sy.MatMul(sy.Rational(1, 144),
           sy.Matrix(almost_gaussian_kernel), evaluate=False)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the sum of the `almost_gaussian_kernel`.
 k_sum = np.sum(almost_gaussian_kernel)
 k_sum
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Fixed, scaled kernel.
 almost_gaussian_solution_1 = 1 / k_sum * almost_gaussian_kernel
 almost_gaussian_solution_1
@@ -686,13 +686,13 @@ almost_gaussian_solution_1
 
 The kernel values now sum to 1:
 
-```{code-cell} ipython3
+```{code-cell}
 np.sum(almost_gaussian_solution_1)
 ```
 
 But the kernel still has its original, idiosyncratic shape:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the fixed, scaled kernel.
 kernel_plot(almost_gaussian_solution_1);
 ```
@@ -701,7 +701,7 @@ Now, when we use this adjusted kernel to filter `camera`, we get the target
 image, which is the product of a filtering process much closer to Gaussian
 smoothing than the original attempt above:
 
-```{code-cell} ipython3
+```{code-cell}
 # Bingo!
 almost_gaussian_filtered_camera = ndi.correlate(
     camera,
@@ -736,7 +736,7 @@ arrays ($x$ and $y$), and a `sigma` ($\sigma$, standard deviation) value, as
 arguments. Figure out what needs to be in each input argument to produce the
 following `target_kernel`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the target kernel.
 target_kernel = np.array([[0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  ],
                           [0.  , 0.  , 0.01, 0.02, 0.01, 0.  , 0.  ],
@@ -755,7 +755,7 @@ target_kernel
 Once you have successfully generated the `target_kernel` using your function,
 use it to blur the following image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Read in and show the image which you should blur with your new kernel.
 xenomorph = ski.io.imread("images/xenomorph.jpg", as_gray=True)
 plt.imshow(xenomorph);
@@ -777,7 +777,7 @@ uncomment it, and modify it so it can be used to produce the `target_kernel`.
 
 *Note*: there is a cell two cells below which can "mark" your work - it will test whether your function produces a kernel identical to the `target_kernel`. Once you have written your function, uncomment the marking code and run it. If you have done everything correctly, it will run with no error. If not, you will get a nasty-looking error (but keep going!).
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 
 # The input vectors for your function.
@@ -790,7 +790,7 @@ def DIY_gauss(x, y, sigma):
     ...
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # MARK YOUR ANSWER HERE
 # If the code below runs with no error, you have written the function correctly...
 # You will need to un-comment the code first (obvivously!).
@@ -802,7 +802,7 @@ def DIY_gauss(x, y, sigma):
 
 Do not forget to use your kernel to blur the `xenomorph` image in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply your kernel with the xenomorph image...
 xenomorph_gauss_blurred = ...
 ```
@@ -827,7 +827,7 @@ changing the intensities in a way that is not part of the typical Gaussian
 blur procedure e.g. we will be altering the average pixel intensity of the
 whole image, rather than just blurring the pixels...
 
-```{code-cell} ipython3
+```{code-cell}
 def DIY_gauss_solution(i, j, sigma):
 
     # Implement the function.
@@ -854,7 +854,7 @@ np.round(DIY_gauss_solution(x_solution, y_solution, 1), 2) == np.round(target_ke
 
 To use the `target_kernel` to recreate the target image, you need to hefty sigma value of 10:
 
-```{code-cell} ipython3
+```{code-cell}
 sigma = 10
 
 # Blur the `xenomorph` image, and show beside the original.
@@ -871,7 +871,7 @@ plt.imshow(target_image_solution)
 plt.title('Gaussian Blur with `target_kernel`');
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # This is not part of the solution, but here we save the resulting solution
@@ -894,7 +894,7 @@ images clearer, with the features and edges more defined.
 
 How can we sharpen an image with a Gaussian *blur* filter, we hear you ask? We will demonstrate below. Sharpening is easiest to appreciate if we start with a slightly blurry image. In the cell below, we create a `blurry_cat` image by applying a Gaussian filter, we use a low `sigma` value, to keep the blur only slight:
 
-```{code-cell} ipython3
+```{code-cell}
 # Add a little blur.
 blurry_cat = ski.filters.gaussian(ski.data.cat(),
                                   sigma=1)
@@ -914,7 +914,7 @@ a version of the image which is blurrier than the original, giving us the
 *difference* between the original image and the blurry image. This effect is
 easiest to appreciate visually:
 
-```{code-cell} ipython3
+```{code-cell}
 # Perform the sharpening, on each color channel separately, to avoid altering the color of the image.
 gaussian_filtered_cats = []
 sharpened = []
@@ -949,7 +949,7 @@ original. We can also use a specialised [sharpening
 kernel](https://www.geeksforgeeks.org/deep-learning/types-of-convolution-kernels/#3-sharpening-kernel)
 to achieve the same effect:
 
-```{code-cell} ipython3
+```{code-cell}
 sharpening_kernel = np.array([[0, -1 , 0],
                               [-1, 5, -1],
                               [0, -1,  0]])
@@ -957,7 +957,7 @@ sharpening_kernel = np.array([[0, -1 , 0],
 
 Here's a nicer mathematical display of the kernel:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 show_mat(sharpening_kernel)
@@ -965,7 +965,7 @@ show_mat(sharpening_kernel)
 
 We show this kernel in 3D below (it does look pretty sharp!):
 
-```{code-cell} ipython3
+```{code-cell}
 kernel_plot(sharpening_kernel)
 ```
 
@@ -976,7 +976,7 @@ bigger value it will get in the sharpened image.
 
 To see this in detail, let's take just the middle row of the `sharpening_kernel`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Slice out the middle row of the `sharpening_kernel`.
 middle_row_sharp = sharpening_kernel[1, :]
 
@@ -986,7 +986,7 @@ middle_row_sharp
 We can filter this middle row with a 1-D array of numbers, using the same
 machinery as for larger image arrays:
 
-```{code-cell} ipython3
+```{code-cell}
 # An array of numbers.
 my_nums = np.array([0, 1, 2, 100])
 my_nums
@@ -994,7 +994,7 @@ my_nums
 
 We perform the filtering in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 ndi.correlate(my_nums, weights=middle_row_sharp)
 ```
 
@@ -1004,7 +1004,7 @@ this principle again below, using 2D arrays the full `sharpening_kernel`.
 First, we create a 2D array where there are no differences between the
 adjacent pixels:
 
-```{code-cell} ipython3
+```{code-cell}
 # A boring array.
 no_diff = np.ones((6, 6))
 no_diff
@@ -1013,7 +1013,7 @@ no_diff
 Applying this array with the `sharpening_kernel` will yield the same array, as
 there are no differences in the input.
 
-```{code-cell} ipython3
+```{code-cell}
 ndi.correlate(no_diff, weights=sharpening_kernel)
 ```
 
@@ -1021,7 +1021,7 @@ Conversely, the array below contains a repeating pattern of 2's and 3's in the f
 
 In the last three rows, the same pattern is repeated, only now the 3's are negative, increasing the difference between the pixels in each neighborhood:
 
-```{code-cell} ipython3
+```{code-cell}
 diffs = np.array([[2, 3, 2, 3, 2, 3],
                   [3, 2, 3, 2, 3, 2],
                   [2, 3, 2, 3, 2, 3],
@@ -1036,7 +1036,7 @@ values in the bottom three rows, amplifying the differences between the pixels,
 such that larger differences become even larger thanks to the sharpening
 operation:
 
-```{code-cell} ipython3
+```{code-cell}
 # Larger differences in later rows, where there is greater variance in the pixel intensities.
 sharp_diffs = ndi.correlate(diffs, weights=sharpening_kernel)
 sharp_diffs
@@ -1046,7 +1046,7 @@ Let's apply the `sharpening_kernel` to the `blurry_cat` image array. As this
 array is a 2D *color* image (meaning, a 3D array), we apply the kernel to each
 color channel separately:
 
-```{code-cell} ipython3
+```{code-cell}
 # Separately sharpen each color channel of the `blurry_cat` image.
 sharpened_cat = blurry_cat.copy()
 for i in np.arange(3):
@@ -1078,7 +1078,7 @@ a color image, with the color channels in the third dimension (`axis=2`). This
 prevents the sharpening filter from applying the sharpening filter across the
 color axis, and therefore affecting the color of the image.
 
-```{code-cell} ipython3
+```{code-cell}
 # Sharpen `blurry_cat`.
 sharpen_cat = ski.filters.unsharp_mask(blurry_cat,
                                        channel_axis=2)
@@ -1096,7 +1096,7 @@ plt.tight_layout();
 
 Changing the `amount` parameter will intensify the sharpening effect:
 
-```{code-cell} ipython3
+```{code-cell}
 # Sharpen `blurry_cat`.
 sharpen_cat = ski.filters.unsharp_mask(blurry_cat,
                                        amount=2,
@@ -1121,7 +1121,7 @@ plt.tight_layout();
 In keeping with the "sharp" topic, below we load in a picture of a very
 regal-looking eagle, from `ski.data`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in and show an image.
 eagle = ski.data.eagle()
 show_attributes(eagle)
@@ -1131,7 +1131,7 @@ plt.imshow(eagle);
 We're feeling vandalistic, and so have ruined this image by adding a boatload
 of Gaussian blur, in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Blur the `eagle` image.
 blurry_eagle = ski.filters.gaussian(eagle,
                                     sigma=5)
@@ -1144,7 +1144,7 @@ You mission is the following: make a custom sharpening kernel to sharpen `blurry
 
 When making your modifications to the kernel pay attention to the original values in `sharpening_kernel` to decide what values you can use to achieve a similar but stronger effect. Here is the original `sharpening_kernel`, to act as your spiritual guide:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 show_mat(sharpening_kernel)
@@ -1156,7 +1156,7 @@ As a final step use `ski.filters.unsharp_mask()` as an alternate method
 sharpen the `blurry_eagle` image. Use whatever argument settings you need.
 Compare the result to your custom kernel.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 my_sharpening_kernel = ...
 
@@ -1172,7 +1172,7 @@ sharp_eagle = ...
 
 We got some pretty good performance from the following kernel:
 
-```{code-cell} ipython3
+```{code-cell}
 another_sharpening_kernel = np.array([[ -3, -3, -3],
                                       [ -3,  25, -3],
                                       [ -3, -3, -3]])
@@ -1181,12 +1181,12 @@ another_sharpening_kernel = np.array([[ -3, -3, -3],
 An important feature to be aware of here, is that the sharpening kernel should
 sum to 1:
 
-```{code-cell} ipython3
+```{code-cell}
 # The sum of the original `sharpening_kernel`.
 np.sum(sharpening_kernel)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # The sum of the newer, stronger `another_sharpening_kernel`.
 np.sum(another_sharpening_kernel)
 ```
@@ -1202,7 +1202,7 @@ negative off-center values) increase the strength of the sharpening effect.
 
 We use the new kernel to sharpen `blurry_eagle` in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Perform the filtering, to sharpen the image.
 sharpened_eagle_solution = ndi.correlate(blurry_eagle,
                                weights=another_sharpening_kernel)
@@ -1224,7 +1224,7 @@ plt.tight_layout();
 We also got pretty good results from `ski.filters.unsharp_mask()`, setting the
 `amount` argument to 3 (for a strong sharpening effect):
 
-```{code-cell} ipython3
+```{code-cell}
 # Sharpen, via `skimage`.
 sharpened_eagle_solution_from_ski = ski.filters.unsharp_mask(blurry_eagle, 
                                                              amount=5)
@@ -1256,7 +1256,7 @@ which will detect such intensity changes in the vertical ($y$) direction, and
 thus will detect horizontal edges. That may sound paradoxical, but
 *horizontal* edges have *vertical* gradients:
 
-```{code-cell} ipython3
+```{code-cell}
 # A horizontal edge detection kernel.
 horizontal_edge_detection_kernel = np.array([[-1, -1, -1],
                                              [ 0,  0,  0],
@@ -1267,7 +1267,7 @@ horizontal_edge_detection_kernel
 
 To show how this kernel works, we will make an image array with very clear edges - one horizontal edge is at the top of the white square, another is at the bottom of the white square. One vertical edge is on the left side of the square, and another vertical edge is on the right side of the square:
 
-```{code-cell} ipython3
+```{code-cell}
 # An image array containing clear edges.
 edgy = np.array([ [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1286,7 +1286,7 @@ plt.imshow(edgy);
 
 Applying our horizontal edge detection kernel finds the horizontal edges. Note again that the change in pixel intensities is in the *vertical* direction, but the edge itself runs in the *horizontal* direction:
 
-```{code-cell} ipython3
+```{code-cell}
 # Use the horizontal edge detection filter.
 edgy_horizontal = ndi.correlate(edgy,
                                 horizontal_edge_detection_kernel)
@@ -1308,7 +1308,7 @@ Conversely, when the kernel hits the 1-to-0 vertical changes at the bottom of th
 The original `edgy` array, and the array resulting from application of the
 `horizontal_edge_detection_kernel` are both shown in "raw" NumPy output below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the horizontal edge-filtered array.
 print("Original `edgy` array:\n", edgy)
 print("\nHorizontally edge filtered:\n", edgy_horizontal)
@@ -1320,7 +1320,7 @@ You can also view these arrays, in prettier form, below:
 
 We can "flip" our edge detection [kernel](https://www.geeksforgeeks.org/deep-learning/types-of-convolution-kernels) to look for big changes in gradient in the *horizontal* ($x$) direction, which will find *vertical* edges:
 
-```{code-cell} ipython3
+```{code-cell}
 # A vertical edge detection kernel.
 vertical_edge_detection_kernel = horizontal_edge_detection_kernel.T
 vertical_edge_detection_kernel
@@ -1333,12 +1333,12 @@ detects vertical edges, and it does so by looking for large pixel intensity
 changes in the horizontal direction (those at the left/right side edges of the
 square):
 
-```{code-cell} ipython3
+```{code-cell}
 # The original square.
 plt.imshow(edgy);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Detect edges in the vertical direction.
 edgy_vertical = ndi.correlate(edgy,
                               vertical_edge_detection_kernel)
@@ -1354,7 +1354,7 @@ end up as black pixels (with value -1). No change ends up as gray (0):
 Applied to more complex images, this edge detection can have some pretty cool
 effects:
 
-```{code-cell} ipython3
+```{code-cell}
 # Load in an image, convert to grayscale.
 coffee_gray = ski.color.rgb2gray(ski.data.coffee())
 
@@ -1365,7 +1365,7 @@ show_attributes(coffee_gray);
 
 First, we detect edges in the horizontal direction:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter using the horizontal edge detection kernel.
 gradient_horizontal_coffee_gray = ndi.correlate(
     coffee_gray,
@@ -1375,7 +1375,7 @@ plt.imshow(gradient_horizontal_coffee_gray);
 
 Then, in the vertical direction:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter using the vertical edge detection kernel.
 gradient_vertical_coffee_gray = ndi.correlate(
     coffee_gray,
@@ -1387,7 +1387,7 @@ We can combine these two edge detection filters together to search for edges
 in both directions. First, lets refresh our memory of what `edgy` looked like,
 filtered in both directions separately:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the image which has been filtered with the horizontal edge detection kernel.
 plt.subplot(1, 2, 1)
 plt.imshow(edgy_horizontal)
@@ -1408,7 +1408,7 @@ A simple way to combine these filters is to:
 ...at the end of this process, only pixels for which an edge was detected in
 either direction will remain in the resulting image array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Combine the filters.
 # Stack to 3D, `shape` = (11, 10, 2).
 edgy_vertical_horizontal_stack = np.stack([edgy_vertical,
@@ -1425,7 +1425,7 @@ plt.imshow(edgy_vertical_horizontal_stack);
 
 Pretty cool, here are all the steps, visualised together:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot all the `edgy` images together.
 plt.figure(figsize=(16, 6))
 plt.subplot(1, 4, 1)
@@ -1450,7 +1450,7 @@ are shown on the image below:
 Let's do this again, for the images that resulted from filtering `coffee_gray`
 with our horizontal and vertical edge detection kernels, respectively.
 
-```{code-cell} ipython3
+```{code-cell}
 # Search for both types of edge (with `coffee_gray`).
 # Stack to 3D, `shape` = (400, 600, 2).
 coffee_vertical_horizontal_stack = np.stack([gradient_vertical_coffee_gray,
@@ -1470,7 +1470,7 @@ Edgy indeed...
 
 We can view all of these steps together, on the plot below:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot all the `coffee_gray` images together.
 plt.figure(figsize=(12,8))
 plt.subplot(2, 2, 1)
@@ -1491,7 +1491,7 @@ plt.imshow(coffee_vertical_horizontal_stack);
 
 The Sobel filter is a similar edge detection filter, which uses the [following](https://www.geeksforgeeks.org/deep-learning/types-of-convolution-kernels/) [kernels](https://nrsyed.com/2018/02/18/edge-detection-in-images-how-to-derive-the-sobel-operator):
 
-```{code-cell} ipython3
+```{code-cell}
 # Sobel horizontal edge detection kernel.
 sobel_horizontal =np.array([[-1,-2,-1],
                             [0, 0, 0],
@@ -1499,7 +1499,7 @@ sobel_horizontal =np.array([[-1,-2,-1],
 print("\nSobel horizontal edge detection kernel:\n", sobel_horizontal)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Sobel vertical edge detection kernel.
 sobel_vertical = np.array([[-1, 0, 1],
                            [-2, 0, 2],
@@ -1509,7 +1509,7 @@ print("\nSobel vertical edge detection kernel:\n", sobel_vertical)
 
 Let's try these out with `edgy`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the Sobel horizontal edge detection filter.
 sobel_edgy_horizontal = ndi.correlate(edgy,
                                       sobel_horizontal)
@@ -1520,7 +1520,7 @@ The effect on the individual pixel values is shown below:
 
 ![](images/horizontal_edge_matrices_sobel.png)
 
-```{code-cell} ipython3
+```{code-cell}
 # Apply the Sobel vertical edge detection filter.
 sobel_edgy_vertical = ndi.correlate(edgy,
                                     sobel_vertical)
@@ -1534,7 +1534,7 @@ Again, you can inspect the effect on the individual pixel values below:
 We can combine each edge-filtered image using the method we saw above, taking
 the absolute maximum values after stacking:
 
-```{code-cell} ipython3
+```{code-cell}
 # Combine the filters.
 # Stack to 3D, `shape` = (11, 10, 2).
 sobel_edgy_vertical_horizontal_stack = np.stack([sobel_edgy_vertical,
@@ -1562,7 +1562,7 @@ $ \large G_{\text{overall}} = \sqrt{ G_x^2 + G_y^2 } $
 
 You may recognise this as the [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance) formula. It will give us the edges in both directions, pretty nifty!:
 
-```{code-cell} ipython3
+```{code-cell}
 # Run the numbers...
 sobel_overall = np.sqrt(sobel_edgy_vertical**2 + sobel_edgy_horizontal**2)
 plt.imshow(sobel_overall);
@@ -1586,7 +1586,7 @@ Remember the first edge detection kernels that we used above?:
 
 [Similar](https://scikit-image.org/docs/0.25.x/api/skimage.filters.html#skimage.filters.prewitt_h) [kernels](https://scikit-image.org/docs/0.25.x/api/skimage.filters.html#skimage.filters.prewitt_v) [are are used by](https://en.wikipedia.org/wiki/Prewitt_operator) `ski.filters.prewitt()` edge detection filter, which we implement in the cell below, on the `edgy` array:
 
-```{code-cell} ipython3
+```{code-cell}
 # Prewitt filtering.
 edgy_prewitt_ski = ski.filters.prewitt(edgy)
 plt.imshow(edgy_prewitt_ski);
@@ -1594,7 +1594,7 @@ plt.imshow(edgy_prewitt_ski);
 
 Here we implement the Sobel filter using `skimage`:
 
-```{code-cell} ipython3
+```{code-cell}
 # The same Sobel result, via `skimage`.`
 edgy_sobel_ski = ski.filters.sobel(edgy)
 plt.imshow(edgy_sobel_ski);
@@ -1602,7 +1602,7 @@ plt.imshow(edgy_sobel_ski);
 
 The plot below shows the effect of the two filters, side by side:
 
-```{code-cell} ipython3
+```{code-cell}
 # Altogether...
 coins = ski.data.coins()
 prewitt_coins = ski.filters.prewitt(coins)
@@ -1652,7 +1652,7 @@ have noticed that, for all of the final output images from each filter, the
 edges detected are two pixels wide. For instance the image below results from
 filtering `edgy` with the Sobel filter:
 
-```{code-cell} ipython3
+```{code-cell}
 # Edgy, filtered with `ski.filters.sobel()`.
 plt.imshow(edgy_sobel_ski);
 ```
@@ -1678,7 +1678,7 @@ Please note that you will "pass" this exercise if you make kernels which detect 
 
 *Hint:* run the function `hints.edgy()` for some help if you get stuck.
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 ```
 
@@ -1693,7 +1693,7 @@ The solution here is to use smaller kernels, so they are searching for pixel
 intensity gradients in smaller pixel neighborhoods. We used the following
 kernels:
 
-```{code-cell} ipython3
+```{code-cell}
 # Detect horizontal edges.
 horizontal_2by2_kernel = np.array([[1, 1],
                                   [-1, -1]])
@@ -1702,7 +1702,7 @@ horizontal_2by2_kernel
 
 ...filtering `edgy` with this kernel yields single-pixel wide horizontal edges:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filter `edgy` with our kernel to find the horizontal edges.
 edgy_horizontal_from_2by2 = ndi.correlate(edgy,
                                           weights=horizontal_2by2_kernel)
@@ -1712,7 +1712,7 @@ plt.imshow(edgy_horizontal_from_2by2);
 
 Then we used this kernel to find the vertical edges:
 
-```{code-cell} ipython3
+```{code-cell}
 vertical_2by2_kernel = np.array([[-1, 1],
                                  [-1, 1]])
 vertical_2by2_kernel
@@ -1720,7 +1720,7 @@ vertical_2by2_kernel
 
 ...applying to `edgy` gives us:
 
-```{code-cell} ipython3
+```{code-cell}
 # Filtering `edgy` with our kernel to find the vertical edges.
 edgy_vertical_from_2by2 = ndi.correlate(edgy,
                                         weights=vertical_2by2_kernel)
@@ -1734,7 +1734,7 @@ $ \large G_{\text{overall}} = \sqrt{ G_x^2 + G_y^2 } $
 
 As if by magic, we get our one-pixel wide edges, in the final image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Both types of edge together, with thanks to Euclid.
 edgy_both_from_2by2_kernel = np.sqrt(edgy_vertical_from_2by2**2 + edgy_horizontal_from_2by2**2)
 
@@ -1763,7 +1763,7 @@ Here we will show that this is the same underling operation.  For reasons that
 will soon become clear, this time we're going to use a kernel that is not
 left-right or up-down symmetric.  Please bear with us:
 
-```{code-cell} ipython3
+```{code-cell}
 odd_kernel = np.array([[-1.,  3.,  1.],
                        [ 0.,  2., -2.],
                        [ 2., -3., -2.]])
@@ -1771,7 +1771,7 @@ odd_kernel = np.array([[-1.,  3.,  1.],
 
 Next we'll make a floating point image to apply our kernel to:
 
-```{code-cell} ipython3
+```{code-cell}
 # Floating point version of camera image.
 f_camera = ski.data.camera().astype(float)
 f_camera
@@ -1779,18 +1779,18 @@ f_camera
 
 Now we'll use our usual `ndi.correlate` operation to apply the kernel.
 
-```{code-cell} ipython3
+```{code-cell}
 odd_image = ndi.correlate(f_camera, odd_kernel)
 odd_image
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(odd_image)
 ```
 
 Now — `ndi.convolve` does _not_ give use the same output when applying the same kernel.   You'll soon see why.
 
-```{code-cell} ipython3
+```{code-cell}
 # Application of convolution using the same kernel.
 conv_img = ndi.convolve(f_camera, odd_kernel)
 conv_img
@@ -1798,14 +1798,14 @@ conv_img
 
 Notice from the display above that the numbers in this image differ from those in `odd_image` — the result of applying `ndi.correlate` with this kernel.
 
-```{code-cell} ipython3
+```{code-cell}
 # Applying ndi.convolve with same kernel gives different result.
 np.all(conv_img == odd_image)
 ```
 
 However, `ndi.convolve` is *applying* the kernel in a different way.  Specifically, it is applying the same calculations as `ndi.correlate` with a kernel that has been flipped on both left-right and up-down axes:
 
-```{code-cell} ipython3
+```{code-cell}
 flipped_kernel = np.fliplr(np.flipud(odd_kernel))
 flipped_kernel
 ```
@@ -1813,7 +1813,7 @@ flipped_kernel
 If we use this flipped kernel with `ndi.convolve`, we get the same result when
 we applied the original kernel with `ndi.correlate`.
 
-```{code-cell} ipython3
+```{code-cell}
 reconv_img = ndi.convolve(f_camera, flipped_kernel)
 np.all(reconv_img == odd_image)
 ```

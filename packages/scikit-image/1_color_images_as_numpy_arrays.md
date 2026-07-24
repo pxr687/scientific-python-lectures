@@ -4,11 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.3
+    jupytext_version: 1.19.5
 kernelspec:
-  name: python3
   display_name: Python 3 (ipykernel)
   language: python
+  name: python3
 ---
 
 # What about color?
@@ -17,7 +17,7 @@ kernelspec:
 :class: dropdown
 :name: adapted-from-1
 
-This tutorial is adapted from "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other resources that inspired this tutorial.
+This tutorial is adapted from "`scikit-image`: image processing" by Emmanuelle Gouillart. Please see the References section at the end of the page for other sources and resources.
 
 :::
 
@@ -36,7 +36,7 @@ aesthetic experiences, like this one:
 
 First, some library imports:
 
-```{code-cell} ipython3
+```{code-cell}
 # Library imports.
 import numpy as np
 import matplotlib.pyplot as plt
@@ -52,7 +52,7 @@ from skitut import hints
 Below, we create some small 2D image arrays, with which to explore color
 representation:
 
-```{code-cell} ipython3
+```{code-cell}
 # A two-dimensional numpy array of 1's and 0's.
 two_D_ones_and_zeros = np.array([[1, 0,],
                                  [0, 1,]],
@@ -80,12 +80,12 @@ smiley = np.array([[0, 0, 0, 0, 0, 0, 0, 0],
 
 In our humble `two_D_ones_and_zeros` image array, each pixel is either a 1 or 0 in the `float64` `dtype`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array
 two_D_ones_and_zeros
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Display array on screen.
 plt.matshow(two_D_ones_and_zeros)
 plt.colorbar();
@@ -95,12 +95,12 @@ Conversely, the array `two_D_other_integers` contains values other than 0 and
 1.  Note that, though these *numbers* themselves are integers, they are
 represented by NumPy as `float64` values, because we specified the `float` data type.
 
-```{code-cell} ipython3
+```{code-cell}
 # Another image from earlier.
 two_D_other_integers
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(two_D_other_integers)
 plt.colorbar();
 ```
@@ -139,7 +139,7 @@ We can think of the `gray` colormap as a straightforward map of image
 intensity to white intensity, whereas  `viridis` maps intensity to a range of
 color. The plot below shows both arrays, with both colormaps, for comparison:
 
-```{code-cell} ipython3
+```{code-cell}
 # An image from earlier (using the `gray` colormap)
 plt.figure(figsize=(8, 8))
 plt.subplot(2, 2, 1)
@@ -175,12 +175,12 @@ their pixel values; they cannot themselves specify color information. **This
 will be true of any two-dimensional image array**, because there is only one
 value per pixel, and both of these image arrays are two-dimensional:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the shape of our binary image array.
 two_D_ones_and_zeros.shape
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the shape of our grayscale image array.
 two_D_other_integers.shape
 ```
@@ -209,14 +209,14 @@ Sounds Sci-Fi! But what does it mean?
 
 Let's focus on our lowly 4-pixel binary array (4 *array pixels*, that is):
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array.
 two_D_ones_and_zeros
 ```
 
 We visualise this array with Matplotlib:
 
-```{code-cell} ipython3
+```{code-cell}
 # Our 4-pixel, binary array.
 plt.matshow(two_D_ones_and_zeros);
 ```
@@ -241,7 +241,7 @@ the argument `axis=2`. This adds new arrays to the stack along the third
 dimension, when we count the dimensions (axes) from 0, as we do in Python
 indexing:
 
-```{code-cell} ipython3
+```{code-cell}
 # Stack the arrays in the third dimension.
 three_D_stack_array = np.stack([two_D_ones_and_zeros,
                                 two_D_ones_and_zeros],
@@ -253,7 +253,7 @@ At first glance, the "raw" output from NumPy may not look like the "stacked"
 slices in the image above, but please bear with us. Our 3D stacked array is of
 the right shape:
 
-```{code-cell} ipython3
+```{code-cell}
 three_D_stack_array.shape
 ```
 
@@ -271,7 +271,7 @@ Imagine being in the same physical space as these slices. Starting at the front 
 
 We can use indexing operations to create the experience of this walk, in "Python space". Because we are dealing with a three-dimensional array we use three elements for indexing, separated by commas. The first element is for rows, the second for columns, and the third for slices. We can retrieve the first slice using:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the first 2D slice from the 3D image.
 # All rows, all columns, first slice.
 three_D_stack_array[:, :, 0]
@@ -279,7 +279,7 @@ three_D_stack_array[:, :, 0]
 
 And we can grab the second slice using:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get the second 2D slice from the 3D image.
 # All rows, all columns, second slice.
 three_D_stack_array[:, :, 1]
@@ -292,7 +292,7 @@ The image below shows these indexing operations represented in three-dimensional
 So far we have two slices in the third dimension. We can easily add a third
 slice, using `np.stack()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Add a third slice in the third dimension.
 three_D_stack_array = np.stack([two_D_ones_and_zeros,  # first slice
                                 two_D_ones_and_zeros,  # second slice
@@ -303,7 +303,7 @@ three_D_stack_array
 
 The `shape` of this new array now reads as "three slices, each with two rows and two columns":
 
-```{code-cell} ipython3
+```{code-cell}
 three_D_stack_array.shape
 ```
 
@@ -313,17 +313,17 @@ We can visualise this new array, in the same three-dimensional space:
 
 Again, we can use indexing to "walk" through the slices, along the $k$ dimension:
 
-```{code-cell} ipython3
+```{code-cell}
 # First 2D slice of the stack.
 three_D_stack_array[:, :, 0]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Second 2D slice of the stack.
 three_D_stack_array[:, :, 1]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Third 2D slice of the stack.
 three_D_stack_array[:, :, 2]
 ```
@@ -343,7 +343,7 @@ Above we said we wanted to introduce a third dimension to specify
 color information in the image itself. Well, now we have three dimensions
 surely plotting our image will render a vibrantly colored picture?:
 
-```{code-cell} ipython3
+```{code-cell}
 # Ooof...not what we wanted...
 plt.matshow(three_D_stack_array);
 ```
@@ -379,7 +379,7 @@ Ok, that is not what we wanted — nothing has changed! Interestingly though, th
 What happens if we set every element, in every slice, to equal 0? To do this,
 first we create a 2D, 4-pixel array containing only 0's:
 
-```{code-cell} ipython3
+```{code-cell}
 # Create a 4-pixel array containing only 0's.
 two_D_zeros = np.zeros(two_D_ones_and_zeros.shape)
 two_D_zeros
@@ -387,7 +387,7 @@ two_D_zeros
 
 Then, we stack into three dimensions with `np.stack()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Stack three of these arrays, making a 3D array containing only 0's.
 three_D_zeros = np.stack([two_D_zeros,
                           two_D_zeros,
@@ -402,7 +402,7 @@ We can visualise this new 3D array as:
 
 Next, we plot with Matplotlib:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the 3D array which contains only 0s.
 plt.matshow(three_D_zeros);
 ```
@@ -416,17 +416,17 @@ As an experiment, let's see what happens if we put 1's on the diagonal in the
 *first slice only*. To do this, we will stack the `two_D_ones_and_zeros` array
 as the first slice, and `two_D_zeros` as the other two slices:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array (for the first slice).
 two_D_ones_and_zeros
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array (for the second and third slices).
 two_D_zeros
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 three_D_stack_array_altered_first = np.stack([two_D_ones_and_zeros, # LOOK HERE!
                                               two_D_zeros,
                                               two_D_zeros],
@@ -440,24 +440,24 @@ More intuitively visualised, our new three dimensional array looks like this:
 
 You can see the values of 1 in the top-left and bottom-right elements of the first slice, all other elements are 0. Once more we can "walk" along the $k$ dimension, using indexing operations:
 
-```{code-cell} ipython3
+```{code-cell}
 # First 2D slice of the stack.
 three_D_stack_array_altered_first[:, :, 0]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Second 2D slice of the stack.
 three_D_stack_array_altered_first[:, :, 1]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Third 2D slice of the stack.
 three_D_stack_array_altered_first[:, :, 2]
 ```
 
 Now let's see what happens if we plot this new 3D array using Matplotlib:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(three_D_stack_array_altered_first);
 ```
 
@@ -480,7 +480,7 @@ amount of red in the image. We can therefore (for now) call this slice the
 
 What happens if we alter only the *second slice* in the third dimension, so that only it contains 1's along its diagonal, and all other array elements equal 0?
 
-```{code-cell} ipython3
+```{code-cell}
 three_D_stack_array_altered_second = np.stack([two_D_zeros,
                                                two_D_ones_and_zeros, # LOOK HERE! Now we alter only the second slice.
                                                two_D_zeros],
@@ -496,7 +496,7 @@ We can visualise this new 3D array as:
 
 How does this 3D array look when we visualise it with Matplotlib?
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(three_D_stack_array_altered_second);
 ```
 
@@ -508,7 +508,7 @@ Alterations to the second slice in the third dimension control the amount of gre
 
 For completeness, let's change only the *third slice* in the third dimension:
 
-```{code-cell} ipython3
+```{code-cell}
 # Put 1 values in the third slice only.
 three_D_stack_array_altered_third = np.stack([two_D_zeros,
                                               two_D_zeros,
@@ -525,7 +525,7 @@ Which gives us the following stacked slices:
 
 When plotted, we get:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.matshow(three_D_stack_array_altered_third);
 ```
 
@@ -557,14 +557,14 @@ supply us with three random decimal numbers between 0 and 1.
 
 First we make a random number generator:
 
-```{code-cell} ipython3
+```{code-cell}
 rng = np.random.default_rng()
 ```
 
 Now run the cell below a few times if you are using this tutorial
 interactively, to see the random draw a few times:
 
-```{code-cell} ipython3
+```{code-cell}
 # Three random integers.
 X1, X2, X3 = rng.uniform(size=3).round(2)
 
@@ -575,7 +575,7 @@ We will use the `X1` value from this random draw to set nonzero diagonal values 
 
 We will then view the resulting display image. Again, if you are using this tutorial interactively, run the cell a few times to see multiple random mixes across the color channels:
 
-```{code-cell} ipython3
+```{code-cell}
 # Get three random integers between 0 and 255
 X1, X2, X3 = rng.uniform(size=3).round(2)
 
@@ -598,7 +598,7 @@ So, each two-dimensional display image has a "hidden" three-dimensional array be
 
 You can view lots of random mixes across the color channels, as a grid of plots, by running the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # A custom function to demonstrate many mixes of values across the three
 # color channels.
 from skitut.random_colors import random_color_array
@@ -612,7 +612,7 @@ pixel. The image array itself contains color information for each pixel.
 
 Let's explore a color image of a real object. We will introduce Scikit-image (`skimage`) in more detail on the [next page](2_skimage_intro), but for now we will again use the straightforwardly named `imread()` function to load an image from a file:
 
-```{code-cell} ipython3
+```{code-cell}
 # Import the input/output module from skimage.
 from skimage import io
 
@@ -623,7 +623,7 @@ coffee = io.imread("images/coffee.png")
 coffee
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # Write out image used above.
@@ -637,7 +637,7 @@ The cell below defines a function to let us quickly view the attributes of any
 image array. You'll notice that this function just uses NumPy attributes,
 given that we are representing images as nothing but NumPy arrays:
 
-```{code-cell} ipython3
+```{code-cell}
 def show_attributes(img):
     """ Print some attributes of an image array `img`
     """
@@ -648,7 +648,7 @@ def show_attributes(img):
     print("Min Pixel Value:", img.min().round(2))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Inspect the attributes of the `coffee` image array.
 show_attributes(coffee)
 ```
@@ -657,7 +657,7 @@ We can see that this image has three dimensions, with three slices in the third 
 
 Let's view the image with `imshow()`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the array.
 plt.imshow(coffee);
 ```
@@ -688,7 +688,7 @@ The plot below shows how to get the primary colors (red, green, blue) using
 both the `float64` and `uint8` convention for the maximum and minimum pixel
 values:
 
-```{code-cell} ipython3
+```{code-cell}
 # Use a custom function to plot the maximum intensity values in the diagonals,
 # for `int` and `float` data, using our familiar 1's and 0's array.
 from skitut.random_colors import plot_int_float
@@ -727,7 +727,7 @@ Ok, now we have clarified the mystical 255 pixel value, let's use a `for` loop
 to extract each color channel of `coffee` image. What do you think Matplotlib
 will show when we visualise each 2D slice of the 3D image separately?
 
-```{code-cell} ipython3
+```{code-cell}
 # The name of each color channel.
 RGB_chan_names = ["Red Channel",
                   "Green Channel",
@@ -754,7 +754,7 @@ to the intensity information in the images for the purposes of the display.
 Though in this instance, `viridis` results in some slightly queasy-looking
 images:
 
-```{code-cell} ipython3
+```{code-cell}
 # Pseudo-color with `viridis`.
 plt.figure(figsize=(15, 5))
 for i, chan_name in enumerate(RGB_chan_names):
@@ -769,7 +769,7 @@ for i, chan_name in enumerate(RGB_chan_names):
 
 When we visualise the full 3D array however, then, as we have seen, each slice controls the amount of a specific color, and the resultant mix gives us our beautiful, full-color image:
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(coffee);
 ```
 
@@ -784,7 +784,7 @@ Now over to you for some NumPy-fuelled color wizardry. Your job is take our bina
 
 Start with an all-zeros array, of the same shape as `two_D_ones_and_zeros`:
 
-```{code-cell} ipython3
+```{code-cell}
 start_slice = np.zeros_like(two_D_ones_and_zeros)
 start_slice
 # YOUR CODE HERE
@@ -800,7 +800,7 @@ start_slice
 The solution here is to `np.stack` a new three-channel array, where the first
 channel is all zero (Red), the second is all zero (Green), and the third channel has all one (Blue).
 
-```{code-cell} ipython3
+```{code-cell}
 # Stack the color channels, where blue is all 1.
 all_blue_solution = np.stack([start_slice,  # Red - all 0
                               start_slice,  # Green - all 0
@@ -827,7 +827,7 @@ Time for some more horrifying computer art. Your task now is to modify the `smil
 
 Once more, your raw ingredients are in the cell below:
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 blood_smiley = smiley.copy()
 ```
@@ -847,7 +847,7 @@ meaning that for those pixels, the array pixel values are already 0. When we
 corresponding to the "face" pixels, to be 1's for the Red channel only, and
 0's in the other channels (slices):
 
-```{code-cell} ipython3
+```{code-cell}
 # Horrific!
 smiley_red_solution = np.stack([smiley * 1,
                                 smiley * 0,
@@ -874,7 +874,7 @@ numerical or NumPy operations on the `smiley` image.
 
 ![](images/inverted_blood_smiley.png)
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 inverted_blood_smiley = smiley.copy()
 ```
@@ -890,20 +890,20 @@ Because `smiley` is a binary array, we can invert the values with a simple numer
 
 Below is the solution to invert `smiley`:
 
-```{code-cell} ipython3
+```{code-cell}
 # Step 1 - invert the original array
 inverted_smiley = 1 - smiley
 inverted_smiley
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.imshow(inverted_smiley);
 ```
 
 We can then stack the inverted array and "turn off" the green and blue
 channels by multiplying their pixel values by 0:
 
-```{code-cell} ipython3
+```{code-cell}
 # Step 2 - add the color channels
 inverted_blood_smiley_solution = np.stack([
     inverted_smiley,  # Red
@@ -928,7 +928,7 @@ Ok, that was all scary. Now we need a coffee to relax (is coffee relaxing?!).
 
 Your next task is to take the `coffee` image and use only numerical or NumPy operations to convert it to a single-channel (e.g. monochrome image):
 
-```{code-cell} ipython3
+```{code-cell}
 # YOUR CODE HERE
 colorless_coffee = coffee.copy()
 ```
@@ -944,7 +944,7 @@ There are several ways to do this. One way is to use the `.mean()` method of the
 
 The resulting output is 2D, and therefore single-channel/monochrome:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution 1
 colorless_coffee_solution = coffee.mean(axis=2)
 
@@ -955,7 +955,7 @@ Any computations (such as summing across the channels) which collapse the 3D col
 
 Another way is just to use NumPy indexing to extract one color channel slice:
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution 2
 colorless_coffee_solution = coffee.copy()[:, :, 0]
 
@@ -964,7 +964,7 @@ plt.imshow(colorless_coffee_solution);
 
 Because the intensity values are different in each color channel slice, the slice we choose will change the resulting image:
 
-```{code-cell} ipython3
+```{code-cell}
 # Use a different slice.
 colorless_coffee_solution = coffee.copy()[:, :, 2]
 
@@ -993,7 +993,7 @@ In this case, let's assume that the person in the `camera` image wants to make i
 
 Here is the original image:
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [hide-input]
 
 import skimage as ski
@@ -1028,7 +1028,7 @@ here...
 
 *Hint 3*: Run the function `hints.corrupted_camera()` for additional help...
 
-```{code-cell} ipython3
+```{code-cell}
 # Make a random number generator
 rng = np.random.default_rng()
 
@@ -1051,7 +1051,7 @@ noisy_camera = ...
 
 The way we did this was by stacking `camera` into a 3D array. We then used NumPy indexing to isolate a region around the cameraman's face, and added some random integer noise to each channel in that region.  Bear in mind that the output image is an integer image, so Matplotlib interprets 255 as maximum intensity, and 0 as minimum.
 
-```{code-cell} ipython3
+```{code-cell}
 # Solution.
 noisy_camera_solution = np.stack([camera,
                                   camera,
@@ -1068,7 +1068,7 @@ noisy_camera_solution = np.clip(noisy_camera_solution, 0, 255)
 plt.imshow(noisy_camera_solution);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 :tags: [remove-cell]
 
 # We regenerate and store the output image for page generation, used above.
@@ -1094,7 +1094,7 @@ So far we have looked at simple images - 2D binary and grayscale low-resolution 
 
 Here is an image of one "slice" of one of the authors' brains, which was captured by a [magnetic resonance imaging](https://en.wikipedia.org/wiki/Magnetic_resonance_imaging) scanner:
 
-```{code-cell} ipython3
+```{code-cell}
 # One author's own brain (a 2D slice).
 brain = io.imread("images/pxr_brain.png")
 
@@ -1105,7 +1105,7 @@ The physics of magnetic resonance imaging is very complicated, but the image
 arrays that it produces, as with our very simple low-resolution arrays, are
 nothing but arrays of numbers:
 
-```{code-cell} ipython3
+```{code-cell}
 # Show the attributes of the brain image.
 show_attributes(brain)
 ```
