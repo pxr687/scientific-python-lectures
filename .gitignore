@@ -63,3 +63,4 @@ joblib/
 .python-version
 foo
 foo
+.venv/
